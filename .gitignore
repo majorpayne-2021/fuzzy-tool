@@ -1,0 +1,14 @@
+.DS_Store
+.vscode/
+.idea/
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+node_modules/
+dist/
