@@ -3,75 +3,78 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>fuzzy-tool — an interactive tour of fuzzy string matching</title>
+    <title>fuzzy-tool — learn how fuzzy matching works, step by step</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <header>
+      <nav class="page-nav">
+        <a href="index.html" class="page-nav-link active">Try it</a>
+        <a href="methods.html" class="page-nav-link">About the methods</a>
+      </nav>
       <h1>fuzzy-tool</h1>
       <p class="tagline">
-        An interactive tour of how computers decide two strings <em>mean the
-        same thing</em>, even when they don't look alike.
+        Watch how a computer decides what a messy string <em>probably
+        meant</em>. Pick a scenario, type something imperfect, and see every
+        step the matching algorithms take to find the likely correct value.
       </p>
     </header>
 
     <main>
-      <section class="chapter" id="chapter-intro">
-        <h2>Try it</h2>
-        <p>
-          Type two strings below — or pick a preset. The tool shows each
-          fuzzy-matching method's score, and how those scores change as
-          normalization steps are applied. <strong>Watch the scores move as
-          you toggle normalization steps</strong> — that's the lesson most
-          tutorials skip.
-        </p>
+      <!-- Scenario tabs -->
+      <nav class="scenario-tabs" id="scenarioTabs" aria-label="Scenarios">
+        <!-- filled in by app.js -->
+      </nav>
 
-        <div class="presets" id="presets">
-          <span class="presets-label">Presets:</span>
-          <!-- filled in by app.js -->
-        </div>
+      <!-- The story + input -->
+      <section class="chapter">
+        <p class="scenario-story" id="scenarioStory"></p>
+        <p class="scenario-noise" id="scenarioNoise"></p>
+        <label class="main-input-label">
+          <span>What the analyst has:</span>
+          <input type="text" id="mainInput" spellcheck="false" />
+        </label>
 
-        <div class="inputs">
-          <label>
-            <span>String A</span>
-            <input type="text" id="inputA" spellcheck="false" />
-          </label>
-          <label>
-            <span>String B</span>
-            <input type="text" id="inputB" spellcheck="false" />
-          </label>
-        </div>
-
-        <div class="controls">
-          <fieldset>
-            <legend>Normalization steps</legend>
-            <div id="normControls"><!-- filled in --></div>
-          </fieldset>
-          <fieldset>
-            <legend>Methods</legend>
-            <div id="methodControls"><!-- filled in --></div>
-          </fieldset>
-        </div>
+        <details class="reference-details">
+          <summary id="referenceSummary">Reference list (what we try to match against)</summary>
+          <ul class="reference-list" id="referenceList"></ul>
+        </details>
       </section>
 
-      <section class="chapter" id="chapter-trail">
-        <h2>Normalization trail</h2>
+      <!-- Step 1: Normalization trail -->
+      <section class="chapter">
+        <h2>Step 1 — Clean up the text</h2>
         <p class="chapter-hint">
-          Each row shows the strings after one more step of cleaning. The
-          score column on the right is the enabled method's score at that
-          stage — watch it climb (or sometimes drop!) as noise is removed.
+          Before any scoring, both your entry and every candidate go through
+          the same cleanup pipeline. This is where a huge amount of matching
+          quality comes from — often more than which algorithm you pick.
         </p>
-        <div id="trail"><!-- filled in --></div>
+        <div id="normTrail"></div>
       </section>
 
-      <section class="chapter" id="chapter-methods">
-        <h2>Method scores (fully normalized)</h2>
+      <!-- Step 2: Top candidates with detail -->
+      <section class="chapter">
+        <h2>Step 2 — Compare against each candidate</h2>
         <p class="chapter-hint">
-          All enabled methods compared on the fully-normalized strings.
-          Different methods catch different kinds of noise — there's no
-          single "best" metric.
+          For the three most likely matches, here's the full working:
+          every method's score, with a visual explanation of how it got there.
         </p>
-        <div id="methodResults"><!-- filled in --></div>
+        <div id="topCandidates"></div>
+      </section>
+
+      <!-- Remaining candidates (compact) -->
+      <section class="chapter">
+        <h2>The rest of the candidates</h2>
+        <p class="chapter-hint">
+          A compact view of every other candidate, sorted by best score.
+        </p>
+        <div id="restCandidates"></div>
+      </section>
+
+      <!-- Step 3: Verdict -->
+      <section class="chapter chapter-verdict">
+        <h2>Step 3 — Likely match</h2>
+        <div id="verdict"></div>
       </section>
     </main>
 
@@ -80,7 +83,7 @@
         Part of a four-chapter showcase:
         <strong>what fuzzy matching is</strong> •
         <strong>how it's used</strong> •
-        <strong>the methods (this tool)</strong> •
+        <strong>the methods</strong> (this tool and <a href="methods.html">the methods page</a>) •
         <strong>a Python library</strong> (coming soon).
       </p>
     </footer>

@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>fuzzy-tool — about the methods</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="page-nav">
+        <a href="index.html" class="page-nav-link">Try it</a>
+        <a href="methods.html" class="page-nav-link active">About the methods</a>
+      </nav>
+      <h1>About the methods</h1>
+      <p class="tagline">
+        Plain-English explanations of the five fuzzy matching methods used
+        in the tool. No code, no math — just the intuition and when each
+        method earns its keep.
+      </p>
+    </header>
+
+    <main>
+      <section class="chapter">
+        <h2>Why more than one method?</h2>
+        <p>
+          There's no single "best" fuzzy matching algorithm. Each one
+          measures <em>a different kind of similarity</em>. A name with a
+          typo needs one method; a sentence with words reordered needs
+          another; a name that's spelled differently but pronounced the same
+          needs a third. The skill is picking the right tool — or combining
+          several — for the noise you actually have.
+        </p>
+        <p>
+          Across every method below, <strong>normalization comes first</strong>.
+          Lowercasing, stripping punctuation, and folding accents do more
+          work than most algorithm choices. The methods below assume you've
+          already done that.
+        </p>
+      </section>
+
+      <!-- Levenshtein -->
+      <article class="method-card-page">
+        <h2>Levenshtein</h2>
+        <div class="method-family-label">Edit distance</div>
+        <p class="method-oneliner">
+          Count the fewest single-character edits — insertions, deletions,
+          and substitutions — needed to turn one string into the other.
+        </p>
+
+        <div class="method-block">
+          <div class="method-block-label">Analogy</div>
+          <p>
+            Think of it as counting keystrokes. How many characters would
+            you have to change to fix a typo? That's the distance. Divide
+            by the length of the longer string to turn the count into a
+            0-to-1 similarity score.
+          </p>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">Worked example</div>
+          <div class="method-worked">
+            "kitten" → "sitting" requires 3 edits:<br />
+            1. k → s (substitution)<br />
+            2. e → i (substitution)<br />
+            3. insert g at the end<br />
+            Distance 3, length 7 → similarity ≈ 0.57.
+          </div>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When to use</div>
+          <ul>
+            <li>Typos in short-to-medium strings (names, product codes).</li>
+            <li>Spelling variations of the same word in the same language.</li>
+            <li>When every character matters and position is meaningful.</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When it fails</div>
+          <ul>
+            <li>Word reordering ("John Smith" vs "Smith, John" scores near zero).</li>
+            <li>Very different string lengths — many edits even if the content is similar.</li>
+            <li>Phonetic differences ("Catherine" vs "Katherine" starts losing ground fast).</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">In your own project</div>
+          <p>
+            Python: <code>rapidfuzz</code> (fast) or <code>python-Levenshtein</code>.
+            JavaScript: <code>fastest-levenshtein</code>.
+            Almost every language has a well-tested implementation — you
+            shouldn't write your own unless you're learning.
+          </p>
+        </div>
+      </article>
+
+      <!-- Jaro-Winkler -->
+      <article class="method-card-page">
+        <h2>Jaro-Winkler</h2>
+        <div class="method-family-label">Edit distance (specialized)</div>
+        <p class="method-oneliner">
+          Like Levenshtein, but purpose-built for short strings like names,
+          and weighted to reward pairs that start with the same characters.
+        </p>
+
+        <div class="method-block">
+          <div class="method-block-label">Analogy</div>
+          <p>
+            People typo the ends of names more often than the beginnings.
+            Jaro-Winkler bakes this into the score: strings that share a
+            prefix get a bonus. "Jonathan" and "Jonathon" score higher than
+            a character count alone would predict, because the first five
+            letters match.
+          </p>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">Worked example</div>
+          <div class="method-worked">
+            "John" vs "Jon" — matching characters within a small window, 0
+            transpositions, shared prefix of 3 ("Jon"). Base Jaro ≈ 0.92,
+            plus the prefix bonus → final ≈ 0.94.
+          </div>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When to use</div>
+          <ul>
+            <li>Short strings where order matters: names, product SKUs, place names.</li>
+            <li>When you want to weight "same start" as evidence of a match.</li>
+            <li>Record-linkage tasks (deduplicating customer or patient records).</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When it fails</div>
+          <ul>
+            <li>Long strings like sentences — the prefix weighting stops helping.</li>
+            <li>Word reordering — same weakness as Levenshtein.</li>
+            <li>Phonetic variations — combine with a phonetic method if you need those.</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">In your own project</div>
+          <p>
+            Python: <code>jellyfish</code>, <code>rapidfuzz</code>.
+            JavaScript: <code>natural</code>, <code>string-similarity-js</code>.
+          </p>
+        </div>
+      </article>
+
+      <!-- Jaccard tokens -->
+      <article class="method-card-page">
+        <h2>Jaccard similarity (tokens)</h2>
+        <div class="method-family-label">Set-based</div>
+        <p class="method-oneliner">
+          Treat each string as a bag of words. Similarity = how many words
+          they share, divided by the total number of unique words across
+          both.
+        </p>
+
+        <div class="method-block">
+          <div class="method-block-label">Analogy</div>
+          <p>
+            Ignore word order entirely. "John Smith" and "Smith, John"
+            contain the same words, so they're the same to this method.
+            Great when human data entry scrambles the order but keeps the
+            content.
+          </p>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">Worked example</div>
+          <div class="method-worked">
+            "red blue green" vs "green red yellow"<br />
+            Shared: {red, green}. Total unique: {red, blue, green, yellow}.<br />
+            Jaccard = 2 / 4 = 0.50.
+          </div>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When to use</div>
+          <ul>
+            <li>Text where word order varies but the words themselves carry the meaning.</li>
+            <li>Short notes, tags, keyword lists, concatenated name fields.</li>
+            <li>As one input when combining multiple methods.</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When it fails</div>
+          <ul>
+            <li>Typos within words — "apple" and "appel" are totally different tokens.</li>
+            <li>Single-word strings — the set has one element, so it's all-or-nothing.</li>
+            <li>Different vocabularies that mean the same thing — "car" vs "automobile".</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">In your own project</div>
+          <p>
+            A five-line function in any language. For large-scale
+            near-duplicate detection, look up MinHash / LSH.
+          </p>
+        </div>
+      </article>
+
+      <!-- Jaccard n-grams -->
+      <article class="method-card-page">
+        <h2>Jaccard similarity (n-grams)</h2>
+        <div class="method-family-label">Set-based</div>
+        <p class="method-oneliner">
+          Same idea as Jaccard tokens, but instead of whole words you use
+          short overlapping character sequences. Catches similarity inside
+          words.
+        </p>
+
+        <div class="method-block">
+          <div class="method-block-label">Analogy</div>
+          <p>
+            Slide a small window across the string and collect every
+            length-n chunk. "Street" and "St" share the 2-gram "St" — enough
+            to catch a partial match. This is what powers a lot of
+            "typo-tolerant" search under the hood.
+          </p>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">Worked example</div>
+          <div class="method-worked">
+            "hello" bigrams: {he, el, ll, lo}<br />
+            "hallo" bigrams: {ha, al, ll, lo}<br />
+            Shared: {ll, lo}. Total unique: 6. Jaccard = 2 / 6 ≈ 0.33.
+          </div>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When to use</div>
+          <ul>
+            <li>Fuzzy search and autocomplete.</li>
+            <li>Finding near-duplicate text blocks.</li>
+            <li>Detecting partial matches inside long strings.</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When it fails</div>
+          <ul>
+            <li>Very short strings — a 2-letter string has only one 2-gram.</li>
+            <li>Totally different vocabularies — shares no n-grams at all.</li>
+            <li>When position matters. Order of n-grams is lost.</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">In your own project</div>
+          <p>
+            Easy to write by hand, or look for <code>ngram</code> utilities
+            in your language's standard library. For big-scale search,
+            inverted indexes over n-grams are a classic trick.
+          </p>
+        </div>
+      </article>
+
+      <!-- Metaphone -->
+      <article class="method-card-page">
+        <h2>Metaphone</h2>
+        <div class="method-family-label">Phonetic</div>
+        <p class="method-oneliner">
+          Encode each string by how it <em>sounds</em>, then compare the
+          codes. Strings that sound alike collapse to the same code, even
+          when their spellings are totally different.
+        </p>
+
+        <div class="method-block">
+          <div class="method-block-label">Analogy</div>
+          <p>
+            Take each name and mumble it out loud. Write down what you
+            heard, ignoring exact spelling. "Catherine" and "Katherine"
+            both sound like "K-TH-R-N", so the phonetic "fingerprint" is
+            the same. This is how a hard-of-hearing filing clerk would sort.
+          </p>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">Worked example</div>
+          <div class="method-worked">
+            "Jhon Smyth" → phonetic code "JNSM0"<br />
+            "John Smith" → phonetic code "JNSM0"<br />
+            Identical codes → phonetic match. Score 1.0.
+          </div>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When to use</div>
+          <ul>
+            <li>Names where people spell the same sound differently.</li>
+            <li>Typos that happen to be phonetic (swapping "ph" for "f").</li>
+            <li>Alongside another method — metaphone alone is coarse, so combine it.</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When it fails</div>
+          <ul>
+            <li>Non-English names — the rules are tuned for English phonetics.</li>
+            <li>Very short strings — codes collide by accident.</li>
+            <li>Anything where spelling is supposed to be meaningful (SKU codes).</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">In your own project</div>
+          <p>
+            Python: <code>jellyfish</code> has Metaphone, Double Metaphone,
+            NYSIIS, and Soundex. For non-English names, look for
+            language-specific phonetic encoders (e.g. Cologne Phonetik for
+            German).
+          </p>
+        </div>
+      </article>
+
+      <!-- Wrap-up -->
+      <section class="chapter">
+        <h2>The practical takeaway</h2>
+        <p>
+          Real-world fuzzy matching pipelines usually <strong>combine</strong>
+          these. A common pattern for customer records:
+        </p>
+        <ol>
+          <li><strong>Normalize aggressively</strong> (lowercase, strip punct, fold accents, sort tokens).</li>
+          <li><strong>Compute several scores</strong> — Jaro-Winkler, Jaccard tokens, Metaphone.</li>
+          <li><strong>Combine them</strong> — take the max, a weighted sum, or feed them into a classifier.</li>
+          <li><strong>Threshold for confidence</strong> — high-scoring pairs auto-match, borderline pairs go to human review.</li>
+        </ol>
+        <p>
+          The tool on the <a href="index.html">other page</a> shows this
+          pipeline in action — see how toggling normalization steps or
+          swapping methods changes the winner.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Part of a four-chapter showcase:
+        <strong>what fuzzy matching is</strong> •
+        <strong>how it's used</strong> •
+        <strong>the methods</strong> (<a href="index.html">the tool</a> and this page) •
+        <strong>a Python library</strong> (coming soon).
+      </p>
+    </footer>
+  </body>
+</html>
