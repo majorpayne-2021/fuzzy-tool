@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>fuzzy-tool — an interactive tour of fuzzy string matching</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>fuzzy-tool</h1>
+      <p class="tagline">
+        An interactive tour of how computers decide two strings <em>mean the
+        same thing</em>, even when they don't look alike.
+      </p>
+    </header>
+
+    <main>
+      <section class="chapter" id="chapter-intro">
+        <h2>Try it</h2>
+        <p>
+          Type two strings below — or pick a preset. The tool shows each
+          fuzzy-matching method's score, and how those scores change as
+          normalization steps are applied. <strong>Watch the scores move as
+          you toggle normalization steps</strong> — that's the lesson most
+          tutorials skip.
+        </p>
+
+        <div class="presets" id="presets">
+          <span class="presets-label">Presets:</span>
+          <!-- filled in by app.js -->
+        </div>
+
+        <div class="inputs">
+          <label>
+            <span>String A</span>
+            <input type="text" id="inputA" spellcheck="false" />
+          </label>
+          <label>
+            <span>String B</span>
+            <input type="text" id="inputB" spellcheck="false" />
+          </label>
+        </div>
+
+        <div class="controls">
+          <fieldset>
+            <legend>Normalization steps</legend>
+            <div id="normControls"><!-- filled in --></div>
+          </fieldset>
+          <fieldset>
+            <legend>Methods</legend>
+            <div id="methodControls"><!-- filled in --></div>
+          </fieldset>
+        </div>
+      </section>
+
+      <section class="chapter" id="chapter-trail">
+        <h2>Normalization trail</h2>
+        <p class="chapter-hint">
+          Each row shows the strings after one more step of cleaning. The
+          score column on the right is the enabled method's score at that
+          stage — watch it climb (or sometimes drop!) as noise is removed.
+        </p>
+        <div id="trail"><!-- filled in --></div>
+      </section>
+
+      <section class="chapter" id="chapter-methods">
+        <h2>Method scores (fully normalized)</h2>
+        <p class="chapter-hint">
+          All enabled methods compared on the fully-normalized strings.
+          Different methods catch different kinds of noise — there's no
+          single "best" metric.
+        </p>
+        <div id="methodResults"><!-- filled in --></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Part of a four-chapter showcase:
+        <strong>what fuzzy matching is</strong> •
+        <strong>how it's used</strong> •
+        <strong>the methods (this tool)</strong> •
+        <strong>a Python library</strong> (coming soon).
+      </p>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
