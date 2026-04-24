@@ -144,27 +144,22 @@ function renderScoreSummary(perMethod, bestId) {
   return `<div class="score-summary">${cells}</div>`;
 }
 
-// ─── Top candidates — full breakdown ─────────────────────────────────────
+// ─── Top candidate — full breakdown, always expanded ─────────────────────
 function renderTopCandidates(candidates) {
-  const sc = getScenario(state.scenarioId);
-  const topN = sc.topN || 3;
-  const top = candidates.slice(0, topN);
-  topEl.innerHTML = top
-    .map((cand, rank) => renderCandidateCard(cand, rank + 1))
-    .join('');
+  topEl.innerHTML = candidates.length
+    ? renderCandidateCard(candidates[0], 1)
+    : '<p class="empty-note">No candidates to compare.</p>';
 }
 
-function renderCandidateCard(cand, rank) {
-  const { raw, normA, normB, perMethod, best } = cand;
-  const summary = renderScoreSummary(perMethod, best.methodId);
-  const methodSections = perMethod
+function renderMethodSections(perMethod, normA, normB, bestId) {
+  return perMethod
     .map((pm) => {
       const viz = renderVisualization(pm.methodId, normA, normB, pm.result, {
         aLabel: 'Your entry',
         bLabel: 'Candidate',
       });
       const scoreCls = scoreClass(pm.result.score);
-      const isBest = pm.methodId === best.methodId;
+      const isBest = pm.methodId === bestId;
       return `
         <div class="method-section ${isBest ? 'method-section-best' : ''}">
           <div class="method-section-head">
@@ -178,6 +173,10 @@ function renderCandidateCard(cand, rank) {
       `;
     })
     .join('');
+}
+
+function renderCandidateCard(cand, rank) {
+  const { raw, normA, normB, perMethod, best } = cand;
   return `
     <article class="candidate-card">
       <header class="candidate-head">
@@ -187,40 +186,41 @@ function renderCandidateCard(cand, rank) {
           <span class="candidate-norm">normalised: <code>${escapeHtml(normB)}</code></span>
         </div>
       </header>
-      ${summary}
-      <div class="candidate-methods">${methodSections}</div>
+      ${renderScoreSummary(perMethod, best.methodId)}
+      <div class="candidate-methods">${renderMethodSections(perMethod, normA, normB, best.methodId)}</div>
     </article>
   `;
 }
 
-// ─── The rest — compact table ────────────────────────────────────────────
+// ─── Rest — accordion rows, click to reveal full working ─────────────────
 function renderRestCandidates(candidates) {
-  const sc = getScenario(state.scenarioId);
-  const topN = sc.topN || 3;
-  const rest = candidates.slice(topN);
+  const rest = candidates.slice(1);
   if (rest.length === 0) {
-    restEl.innerHTML = '<p class="empty-note">All candidates shown above.</p>';
+    restEl.innerHTML = '<p class="empty-note">Only one candidate in the reference list.</p>';
     return;
   }
-  const rows = rest
-    .map((c, i) => {
-      return `
-        <tr>
-          <td class="cmp-rank">N°${i + topN + 1}</td>
-          <td class="cmp-name">${escapeHtml(c.raw)}</td>
-          <td class="cmp-method">${escapeHtml(c.best.methodLabel)}</td>
-          <td class="cmp-score ${scoreClass(c.best.result.score)}">${fmt(c.best.result.score)}</td>
-        </tr>
-      `;
-    })
+  restEl.innerHTML = rest
+    .map((cand, i) => renderAccordionRow(cand, i + 2))
     .join('');
-  restEl.innerHTML = `
-    <table class="compact-candidates">
-      <thead>
-        <tr><th>Rank</th><th>Candidate</th><th>Best method</th><th>Score</th></tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
+}
+
+function renderAccordionRow(cand, rank) {
+  const { raw, normA, normB, perMethod, best } = cand;
+  return `
+    <details class="candidate-row">
+      <summary class="candidate-row-summary">
+        <span class="candidate-row-rank">N°${rank}</span>
+        <span class="candidate-row-name">${escapeHtml(raw)}</span>
+        <span class="candidate-row-method">${escapeHtml(best.methodLabel)}</span>
+        <span class="candidate-row-score ${scoreClass(best.result.score)}">${fmt(best.result.score)}</span>
+        <span class="candidate-row-chevron" aria-hidden="true">›</span>
+      </summary>
+      <div class="candidate-row-body">
+        <div class="candidate-row-norm">normalised: <code>${escapeHtml(normB)}</code></div>
+        ${renderScoreSummary(perMethod, best.methodId)}
+        <div class="candidate-methods">${renderMethodSections(perMethod, normA, normB, best.methodId)}</div>
+      </div>
+    </details>
   `;
 }
 

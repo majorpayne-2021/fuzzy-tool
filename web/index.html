@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
@@ -76,11 +76,11 @@
         <section class="section">
           <div class="eyebrow-row">
             <span class="numeral">N°2</span>
-            <span class="eyebrow">Compare against each candidate</span>
+            <span class="eyebrow">Compare against the top candidate</span>
           </div>
-          <h3 class="subheading">The working, for the top candidates</h3>
+          <h3 class="subheading">The working, for the best match</h3>
           <p class="lede">
-            A summary of every method's score at the top of each card, with
+            A summary of every method's score at the top of the card, with
             a visual explanation below showing how each method got there.
           </p>
           <div id="topCandidates"></div>
@@ -91,7 +91,12 @@
             <span class="numeral">N°3</span>
             <span class="eyebrow">The rest of the candidates</span>
           </div>
-          <h3 class="subheading">A compact view of every other candidate</h3>
+          <h3 class="subheading">Click any row to see the working</h3>
+          <p class="lede">
+            Every other candidate in the reference list, ranked by best
+            score. Expand a row to see the same per-method breakdown as
+            above.
+          </p>
           <div id="restCandidates"></div>
         </section>
       </div>
