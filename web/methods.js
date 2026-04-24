@@ -219,109 +219,6 @@ export function jaccardNgrams(a, b, n = 2) {
   };
 }
 
-// ─── Metaphone (phonetic) ────────────────────────────────────────────────
-// Encodes a string by how it *sounds*. "Catherine" and "Katherine" encode to
-// the same key. This is a simplified Metaphone — handles the common English
-// cases. Real projects should use a library (Double Metaphone, or language-
-// specific encoders) for better coverage.
-
-export function metaphoneCode(s) {
-  if (!s) return '';
-  let w = s.toUpperCase().replace(/[^A-Z]/g, '');
-  if (!w) return '';
-
-  // Strip common silent letter pairs at the start.
-  w = w.replace(/^(KN|GN|PN|AE|WR)/, (m) => m[1]);
-  if (w.startsWith('X')) w = 'S' + w.slice(1);
-  if (w.startsWith('WH')) w = 'W' + w.slice(2);
-
-  let out = '';
-  for (let i = 0; i < w.length; i++) {
-    const c = w[i];
-    const prev = w[i - 1];
-    const next = w[i + 1];
-
-    // Collapse double letters (except C, which has special rules).
-    if (c === prev && c !== 'C') continue;
-
-    switch (c) {
-      case 'A': case 'E': case 'I': case 'O': case 'U':
-        if (i === 0) out += c; // vowels only kept at the start
-        break;
-      case 'B':
-        if (!(i === w.length - 1 && prev === 'M')) out += 'B'; // silent B in "dumb"
-        break;
-      case 'C':
-        if (next === 'H') { out += 'X'; i++; }          // CH -> X
-        else if (/[IEY]/.test(next)) out += 'S';        // soft C
-        else out += 'K';
-        break;
-      case 'D':
-        if (next === 'G' && /[IEY]/.test(w[i + 2])) { out += 'J'; i += 2; }
-        else out += 'T';
-        break;
-      case 'G':
-        if (next === 'H') { if (i + 2 < w.length) i++; break; } // silent GH often
-        if (next === 'N') { out += 'N'; i++; break; }
-        if (/[IEY]/.test(next)) out += 'J';
-        else out += 'K';
-        break;
-      case 'H':
-        if (/[AEIOU]/.test(prev) && !/[AEIOU]/.test(next)) break; // silent H
-        out += 'H';
-        break;
-      case 'K':
-        if (prev !== 'C') out += 'K';
-        break;
-      case 'P':
-        if (next === 'H') { out += 'F'; i++; } else out += 'P';
-        break;
-      case 'Q': out += 'K'; break;
-      case 'S':
-        if (next === 'H') { out += 'X'; i++; } else out += 'S';
-        break;
-      case 'T':
-        if (next === 'H') { out += '0'; i++; }          // "th" -> 0
-        else out += 'T';
-        break;
-      case 'V': out += 'F'; break;
-      case 'W': case 'Y':
-        if (/[AEIOU]/.test(next)) out += c;
-        break;
-      case 'X': out += 'KS'; break;
-      case 'Z': out += 'S'; break;
-      default: out += c;
-    }
-  }
-  return out;
-}
-
-export function metaphone(a, b) {
-  const codeA = metaphoneCode(a);
-  const codeB = metaphoneCode(b);
-  if (!codeA || !codeB) {
-    return {
-      score: 0,
-      explanation: 'One string has no phonetic content.',
-      details: { codeA, codeB, sameCode: false },
-    };
-  }
-  if (codeA === codeB) {
-    return {
-      score: 1,
-      explanation: `Both encode to "${codeA}" — they sound the same.`,
-      details: { codeA, codeB, sameCode: true },
-    };
-  }
-  // Fall back to Levenshtein on the codes for a soft phonetic score.
-  const lev = levenshtein(codeA, codeB);
-  return {
-    score: lev.score,
-    explanation: `Encodes to "${codeA}" vs "${codeB}" — phonetically ${lev.details.distance} edit${lev.details.distance === 1 ? '' : 's'} apart.`,
-    details: { codeA, codeB, sameCode: false, codeDistance: lev.details.distance },
-  };
-}
-
 // ─── Method registry ─────────────────────────────────────────────────────
 // Single source of truth for the UI. Add a method here and it appears
 // automatically in the tool.
@@ -354,12 +251,5 @@ export const METHODS = [
     family: 'Set-based',
     tagline: 'Shared character sequences. Catches partial word matches.',
     fn: jaccardNgrams,
-  },
-  {
-    id: 'metaphone',
-    label: 'Metaphone',
-    family: 'Phonetic',
-    tagline: 'Matches by sound, not spelling. "Catherine" ≈ "Katherine".',
-    fn: metaphone,
   },
 ];

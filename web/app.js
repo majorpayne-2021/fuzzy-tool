@@ -1,14 +1,14 @@
 // App entry point — scenario-driven walkthrough.
 //
-// The flow is: user picks a scenario, types (or edits) a messy input, and
-// the page re-renders top to bottom as a step-by-step story:
-//   1. Normalization trail
-//   2. Top 3 candidates with full visual method breakdowns
-//   3. Remaining candidates in a compact table
-//   4. A verdict — the likely match + why
+// Page reads top to bottom as a story:
+//   0. Scenario tabs + story + messy input + reference list
+//   1. THE ANSWER — the verdict first, because that's what the reader
+//      wants to know
+//   2. Working — normalisation trail, candidate breakdowns, the rest
 //
-// Keeping the renderers small and the state tiny means the code reads as
-// the same narrative the UI tells.
+// Each candidate card leads with a compact score summary across all
+// methods, so the reader can compare at a glance before diving into
+// the per-method visual detail.
 
 import { steps as normSteps, runPipeline, normalize } from './normalization.js';
 import { METHODS } from './methods.js';
@@ -24,6 +24,7 @@ const state = {
 const $ = (id) => document.getElementById(id);
 const tabsEl = $('scenarioTabs');
 const storyEl = $('scenarioStory');
+const sourceEl = $('scenarioSource');
 const noiseEl = $('scenarioNoise');
 const inputEl = $('mainInput');
 const refSummaryEl = $('referenceSummary');
@@ -66,8 +67,9 @@ function renderTabs() {
 function renderScenarioHeader() {
   const sc = getScenario(state.scenarioId);
   storyEl.textContent = sc.story;
-  noiseEl.innerHTML = `<strong>Typical noise in this scenario:</strong> ${escapeHtml(sc.noise)}.`;
-  refSummaryEl.textContent = `Reference list — ${sc.reference.length} entries we'll match against`;
+  sourceEl.innerHTML = `<strong>Where the reference list comes from:</strong> ${escapeHtml(sc.source)}`;
+  noiseEl.innerHTML = `<strong>Typical noise:</strong> ${escapeHtml(sc.noise)}.`;
+  refSummaryEl.textContent = `Reference list — ${sc.reference.length} entries`;
   refListEl.innerHTML = sc.reference
     .map((entry) => `<li>${escapeHtml(entry)}</li>`)
     .join('');
@@ -78,13 +80,14 @@ function renderNormTrail() {
   const stages = runPipeline(state.input);
   const rows = stages
     .map((stage, i) => {
-      const explain = i === 0
-        ? 'Raw input.'
-        : (normSteps.find((s) => s.id === stage.id)?.explain || '');
+      const explain =
+        i === 0
+          ? 'Raw input.'
+          : (normSteps.find((s) => s.id === stage.id)?.explain || '');
       return `
         <div class="trail-row ${i === 0 ? 'is-raw' : ''}">
           <span class="trail-stage">${escapeHtml(stage.label)}</span>
-          <span class="trail-string">${escapeHtml(stage.output) || '<em style="color:#999">(empty)</em>'}</span>
+          <span class="trail-string">${escapeHtml(stage.output) || '<em class="trail-empty">(empty)</em>'}</span>
           <span class="trail-explain">${escapeHtml(explain)}</span>
         </div>
       `;
@@ -101,8 +104,8 @@ function renderNormTrail() {
 }
 
 // ─── Score every candidate ───────────────────────────────────────────────
-// For each candidate in the reference list, run every method and pick the
-// winning score + method. Then rank the candidates by that top score.
+// For each candidate, run every method and pick the best score + method.
+// Rank candidates by their best score across all methods.
 
 function scoreCandidates() {
   const sc = getScenario(state.scenarioId);
@@ -125,9 +128,27 @@ function scoreCandidates() {
     .sort((a, b) => b.best.result.score - a.best.result.score);
 }
 
-// ─── Top 3 candidates — full visual breakdown ────────────────────────────
+// ─── Score summary row (shown at top of each candidate card) ─────────────
+function renderScoreSummary(perMethod, bestId) {
+  const cells = perMethod
+    .map((pm) => {
+      const isBest = pm.methodId === bestId;
+      return `
+        <div class="score-summary-cell ${isBest ? 'is-best' : ''} ${scoreClass(pm.result.score)}">
+          <span class="score-summary-method">${escapeHtml(pm.methodLabel)}</span>
+          <span class="score-summary-score">${fmt(pm.result.score)}</span>
+        </div>
+      `;
+    })
+    .join('');
+  return `<div class="score-summary">${cells}</div>`;
+}
+
+// ─── Top candidates — full breakdown ─────────────────────────────────────
 function renderTopCandidates(candidates) {
-  const top = candidates.slice(0, 3);
+  const sc = getScenario(state.scenarioId);
+  const topN = sc.topN || 3;
+  const top = candidates.slice(0, topN);
   topEl.innerHTML = top
     .map((cand, rank) => renderCandidateCard(cand, rank + 1))
     .join('');
@@ -135,6 +156,7 @@ function renderTopCandidates(candidates) {
 
 function renderCandidateCard(cand, rank) {
   const { raw, normA, normB, perMethod, best } = cand;
+  const summary = renderScoreSummary(perMethod, best.methodId);
   const methodSections = perMethod
     .map((pm) => {
       const viz = renderVisualization(pm.methodId, normA, normB, pm.result, {
@@ -157,27 +179,25 @@ function renderCandidateCard(cand, rank) {
     })
     .join('');
   return `
-    <div class="candidate-card">
-      <div class="candidate-head">
-        <span class="candidate-rank">#${rank}</span>
+    <article class="candidate-card">
+      <header class="candidate-head">
+        <span class="candidate-rank">N°${rank}</span>
         <div class="candidate-names">
           <span class="candidate-name">${escapeHtml(raw)}</span>
-          <span class="candidate-norm">normalized: <code>${escapeHtml(normB)}</code></span>
+          <span class="candidate-norm">normalised: <code>${escapeHtml(normB)}</code></span>
         </div>
-        <div class="candidate-best">
-          <span class="candidate-best-label">best method</span>
-          <span class="candidate-best-method">${escapeHtml(best.methodLabel)}</span>
-          <span class="candidate-best-score ${scoreClass(best.result.score)}">${fmt(best.result.score)}</span>
-        </div>
-      </div>
+      </header>
+      ${summary}
       <div class="candidate-methods">${methodSections}</div>
-    </div>
+    </article>
   `;
 }
 
 // ─── The rest — compact table ────────────────────────────────────────────
 function renderRestCandidates(candidates) {
-  const rest = candidates.slice(3);
+  const sc = getScenario(state.scenarioId);
+  const topN = sc.topN || 3;
+  const rest = candidates.slice(topN);
   if (rest.length === 0) {
     restEl.innerHTML = '<p class="empty-note">All candidates shown above.</p>';
     return;
@@ -186,7 +206,7 @@ function renderRestCandidates(candidates) {
     .map((c, i) => {
       return `
         <tr>
-          <td class="cmp-rank">#${i + 4}</td>
+          <td class="cmp-rank">N°${i + topN + 1}</td>
           <td class="cmp-name">${escapeHtml(c.raw)}</td>
           <td class="cmp-method">${escapeHtml(c.best.methodLabel)}</td>
           <td class="cmp-score ${scoreClass(c.best.result.score)}">${fmt(c.best.result.score)}</td>
@@ -204,7 +224,7 @@ function renderRestCandidates(candidates) {
   `;
 }
 
-// ─── Verdict ─────────────────────────────────────────────────────────────
+// ─── Verdict (now at the top) ────────────────────────────────────────────
 function renderVerdict(candidates) {
   if (candidates.length === 0) {
     verdictEl.innerHTML = '<p>No candidates to match against.</p>';
@@ -212,7 +232,8 @@ function renderVerdict(candidates) {
   }
   const winner = candidates[0];
   const { raw, best } = winner;
-  const confidence = best.result.score >= 0.85 ? 'high' : best.result.score >= 0.65 ? 'medium' : 'low';
+  const confidence =
+    best.result.score >= 0.85 ? 'high' : best.result.score >= 0.65 ? 'medium' : 'low';
   const confidenceCopy = {
     high: 'Strong evidence — the best-scoring method is well above chance.',
     medium: 'Reasonable match, but worth a human look.',
@@ -221,16 +242,16 @@ function renderVerdict(candidates) {
   verdictEl.innerHTML = `
     <div class="verdict-box verdict-${confidence}">
       <div class="verdict-row">
-        <span class="verdict-label">Your entry</span>
+        <span class="eyebrow">Your entry</span>
         <code>${escapeHtml(state.input)}</code>
       </div>
       <div class="verdict-row">
-        <span class="verdict-label">Likely match</span>
-        <code class="verdict-match">${escapeHtml(raw)}</code>
+        <span class="eyebrow">Likely match</span>
+        <span class="verdict-match">${escapeHtml(raw)}</span>
       </div>
       <div class="verdict-row">
-        <span class="verdict-label">Winning method</span>
-        <span>${escapeHtml(best.methodLabel)} (${fmt(best.result.score)})</span>
+        <span class="eyebrow">Winning method</span>
+        <span>${escapeHtml(best.methodLabel)} — score ${fmt(best.result.score)}</span>
       </div>
       <p class="verdict-why">${confidenceCopy}</p>
     </div>
@@ -240,12 +261,11 @@ function renderVerdict(candidates) {
 // ─── Main render loop ────────────────────────────────────────────────────
 function renderAll() {
   renderScenarioHeader();
-  renderNormTrail();
   const candidates = scoreCandidates();
+  renderVerdict(candidates);
+  renderNormTrail();
   renderTopCandidates(candidates);
   renderRestCandidates(candidates);
-  renderVerdict(candidates);
-  // Also rebuild tabs to reflect active state.
   [...tabsEl.children].forEach((btn, i) => {
     btn.classList.toggle('active', SCENARIOS[i].id === state.scenarioId);
   });

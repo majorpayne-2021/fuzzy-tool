@@ -133,34 +133,6 @@ export function renderJaccardNgrams(details) {
   `;
 }
 
-// ─── Metaphone: the phonetic fingerprint ─────────────────────────────────
-// Shows each string above its phonetic code — if the codes match, the
-// strings "sound the same" even when they're spelled differently.
-
-export function renderMetaphone(a, b, details, { aLabel = 'Your entry', bLabel = 'Candidate' } = {}) {
-  const { codeA, codeB, sameCode } = details;
-  const verdict = sameCode
-    ? '<span class="meta-verdict meta-verdict-same">Same phonetic code → they sound alike.</span>'
-    : '<span class="meta-verdict meta-verdict-diff">Different phonetic codes.</span>';
-  return `
-    <div class="viz viz-meta">
-      <div class="meta-row">
-        <span class="viz-side-label">${escapeHtml(aLabel)}</span>
-        <span class="meta-string">${escapeHtml(a)}</span>
-        <span class="meta-arrow">→</span>
-        <span class="meta-code">${escapeHtml(codeA || '(empty)')}</span>
-      </div>
-      <div class="meta-row">
-        <span class="viz-side-label">${escapeHtml(bLabel)}</span>
-        <span class="meta-string">${escapeHtml(b)}</span>
-        <span class="meta-arrow">→</span>
-        <span class="meta-code">${escapeHtml(codeB || '(empty)')}</span>
-      </div>
-      <p class="viz-summary">${verdict}</p>
-    </div>
-  `;
-}
-
 // ─── Dispatch by method id ───────────────────────────────────────────────
 // Called from the main render loop. Each method is rendered from its
 // normalized inputs + the details object the method itself returned.
@@ -176,8 +148,6 @@ export function renderVisualization(methodId, a, b, result, labels) {
       return renderJaccardTokens(details);
     case 'jaccard_ngrams':
       return renderJaccardNgrams(details);
-    case 'metaphone':
-      return renderMetaphone(a, b, details, labels);
     default:
       return '';
   }

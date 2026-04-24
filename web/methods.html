@@ -4,6 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>fuzzy-tool — about the methods</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -41,6 +47,10 @@
 
       <!-- Levenshtein -->
       <article class="method-card-page">
+        <div class="eyebrow-row">
+          <span class="numeral">N°1</span>
+          <span class="eyebrow">Method</span>
+        </div>
         <h2>Levenshtein</h2>
         <div class="method-family-label">Edit distance</div>
         <p class="method-oneliner">
@@ -100,6 +110,10 @@
 
       <!-- Jaro-Winkler -->
       <article class="method-card-page">
+        <div class="eyebrow-row">
+          <span class="numeral">N°2</span>
+          <span class="eyebrow">Method</span>
+        </div>
         <h2>Jaro-Winkler</h2>
         <div class="method-family-label">Edit distance (specialized)</div>
         <p class="method-oneliner">
@@ -156,6 +170,10 @@
 
       <!-- Jaccard tokens -->
       <article class="method-card-page">
+        <div class="eyebrow-row">
+          <span class="numeral">N°3</span>
+          <span class="eyebrow">Method</span>
+        </div>
         <h2>Jaccard similarity (tokens)</h2>
         <div class="method-family-label">Set-based</div>
         <p class="method-oneliner">
@@ -212,6 +230,10 @@
 
       <!-- Jaccard n-grams -->
       <article class="method-card-page">
+        <div class="eyebrow-row">
+          <span class="numeral">N°4</span>
+          <span class="eyebrow">Method</span>
+        </div>
         <h2>Jaccard similarity (n-grams)</h2>
         <div class="method-family-label">Set-based</div>
         <p class="method-oneliner">
@@ -267,64 +289,6 @@
         </div>
       </article>
 
-      <!-- Metaphone -->
-      <article class="method-card-page">
-        <h2>Metaphone</h2>
-        <div class="method-family-label">Phonetic</div>
-        <p class="method-oneliner">
-          Encode each string by how it <em>sounds</em>, then compare the
-          codes. Strings that sound alike collapse to the same code, even
-          when their spellings are totally different.
-        </p>
-
-        <div class="method-block">
-          <div class="method-block-label">Analogy</div>
-          <p>
-            Take each name and mumble it out loud. Write down what you
-            heard, ignoring exact spelling. "Catherine" and "Katherine"
-            both sound like "K-TH-R-N", so the phonetic "fingerprint" is
-            the same. This is how a hard-of-hearing filing clerk would sort.
-          </p>
-        </div>
-
-        <div class="method-block">
-          <div class="method-block-label">Worked example</div>
-          <div class="method-worked">
-            "Jhon Smyth" → phonetic code "JNSM0"<br />
-            "John Smith" → phonetic code "JNSM0"<br />
-            Identical codes → phonetic match. Score 1.0.
-          </div>
-        </div>
-
-        <div class="method-block">
-          <div class="method-block-label">When to use</div>
-          <ul>
-            <li>Names where people spell the same sound differently.</li>
-            <li>Typos that happen to be phonetic (swapping "ph" for "f").</li>
-            <li>Alongside another method — metaphone alone is coarse, so combine it.</li>
-          </ul>
-        </div>
-
-        <div class="method-block">
-          <div class="method-block-label">When it fails</div>
-          <ul>
-            <li>Non-English names — the rules are tuned for English phonetics.</li>
-            <li>Very short strings — codes collide by accident.</li>
-            <li>Anything where spelling is supposed to be meaningful (SKU codes).</li>
-          </ul>
-        </div>
-
-        <div class="method-block">
-          <div class="method-block-label">In your own project</div>
-          <p>
-            Python: <code>jellyfish</code> has Metaphone, Double Metaphone,
-            NYSIIS, and Soundex. For non-English names, look for
-            language-specific phonetic encoders (e.g. Cologne Phonetik for
-            German).
-          </p>
-        </div>
-      </article>
-
       <!-- Wrap-up -->
       <section class="chapter">
         <h2>The practical takeaway</h2>
@@ -334,7 +298,7 @@
         </p>
         <ol>
           <li><strong>Normalize aggressively</strong> (lowercase, strip punct, fold accents, sort tokens).</li>
-          <li><strong>Compute several scores</strong> — Jaro-Winkler, Jaccard tokens, Metaphone.</li>
+          <li><strong>Compute several scores</strong> — Jaro-Winkler for short strings, Jaccard tokens for word-order invariance, Jaccard n-grams for partial matches.</li>
           <li><strong>Combine them</strong> — take the max, a weighted sum, or feed them into a classifier.</li>
           <li><strong>Threshold for confidence</strong> — high-scoring pairs auto-match, borderline pairs go to human review.</li>
         </ol>
