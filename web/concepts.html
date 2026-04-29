@@ -53,33 +53,59 @@
           last job — the one that handles imperfection.
         </p>
 
-        <pre class="diagram">
-DATA CLEANSING  (making messy data usable)
-│
-├── VALIDATION
-│   Is this even a valid value?
-│       • Does this look like a properly-formatted email?
-│       • Is this postcode 4 digits?
-│       • Is this date plausible (not the year 9999)?
-│       • Is this name field empty when it shouldn't be?
-│
-├── STANDARDISATION
-│   Force every record into the same format.
-│       • Phone:    "0400 000 000"   ──►  "+61 400 000 000"
-│       • Address:  "10 Smith St"    ──►  "10 Smith Street"
-│       • Name:     "JOHN SMITH"     ──►  "John Smith"
-│       • Date:     "1/2/24"         ──►  "2024-02-01"
-│
-└── RECORD LINKAGE
-    Match a record to a known entity in your reference list.
-    │
-    ├── EXACT MATCH  — strings must be identical.
-    │                  First pass — cheap and unambiguous.
-    │
-    └── FUZZY MATCH  — tolerate typos and differences.
-                       Second pass — when exact match fails.
-                       ◄── this tool
-        </pre>
+        <div class="diag diag-hierarchy">
+          <div class="diag-node diag-node-root">
+            <div class="diag-node-label">Data cleansing</div>
+            <div class="diag-node-sub">making messy data usable</div>
+          </div>
+
+          <div class="diag-connector">▼</div>
+
+          <div class="diag-tier">
+            <div class="diag-node">
+              <div class="diag-node-label">Validation</div>
+              <div class="diag-node-sub">Is this even a valid value?</div>
+              <ul class="diag-examples">
+                <li>Does this look like a properly-formatted email?</li>
+                <li>Is this postcode 4 digits?</li>
+                <li>Is this date plausible (not the year 9999)?</li>
+                <li>Is this name field empty when it shouldn't be?</li>
+              </ul>
+            </div>
+
+            <div class="diag-node">
+              <div class="diag-node-label">Standardisation</div>
+              <div class="diag-node-sub">Force every record into the same format.</div>
+              <ul class="diag-examples diag-examples-mono">
+                <li><span>Phone</span><code>0400 000 000</code><span class="diag-arrow">▶</span><code>+61 400 000 000</code></li>
+                <li><span>Address</span><code>10 Smith St</code><span class="diag-arrow">▶</span><code>10 Smith Street</code></li>
+                <li><span>Name</span><code>JOHN SMITH</code><span class="diag-arrow">▶</span><code>John Smith</code></li>
+                <li><span>Date</span><code>1/2/24</code><span class="diag-arrow">▶</span><code>2024-02-01</code></li>
+              </ul>
+            </div>
+
+            <div class="diag-node">
+              <div class="diag-node-label">Record linkage</div>
+              <div class="diag-node-sub">Match a record to a known entity in your reference list.</div>
+              <div class="diag-subtree">
+                <div class="diag-connector">▼</div>
+                <div class="diag-tier">
+                  <div class="diag-node diag-node-sub-card">
+                    <div class="diag-node-label">Exact match</div>
+                    <div class="diag-node-sub">Strings must be identical. First pass — cheap and unambiguous.</div>
+                  </div>
+                  <div class="diag-node diag-node-sub-card diag-node-highlight">
+                    <div class="diag-node-label">
+                      Fuzzy match
+                      <span class="diag-tag">this tool</span>
+                    </div>
+                    <div class="diag-node-sub">Tolerate typos and differences. Second pass — when exact match fails.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <p class="aside">
           <strong>Standardisation vs normalisation</strong> — they overlap
@@ -105,25 +131,61 @@ DATA CLEANSING  (making messy data usable)
           of typos, abbreviations, and reordering.
         </p>
 
-        <pre class="diagram">
-For each messy record:
+        <div class="diag diag-cascade">
+          <div class="diag-cascade-step">
+            <div class="diag-cascade-head">
+              <span class="diag-step-num">1</span>
+              <span class="diag-step-name">Exact match</span>
+              <span class="diag-step-aside">against the reference list</span>
+            </div>
+            <div class="diag-cascade-outcomes">
+              <div class="diag-outcome diag-outcome-done">
+                <span class="diag-outcome-mark" aria-hidden="true">✓</span>
+                <span class="diag-outcome-cond">Found</span>
+                <span class="diag-outcome-result">Done. Match resolved.</span>
+              </div>
+              <div class="diag-outcome diag-outcome-next">
+                <span class="diag-outcome-mark" aria-hidden="true">✗</span>
+                <span class="diag-outcome-cond">Not found</span>
+                <span class="diag-outcome-result">Continue to fuzzy match.</span>
+              </div>
+            </div>
+          </div>
 
-   1. EXACT MATCH against the reference list
-        │
-        ├─ Found     ──►  Done. Match resolved.
-        │
-        └─ Not found
-                │
-                ▼
-   2. FUZZY MATCH  (returns scored candidates — this tool)
-                │
-                ▼
-   3. Apply a confidence threshold
-        │
-        ├─ HIGH score    ──►  Auto-match
-        ├─ MEDIUM score  ──►  Human review queue
-        └─ LOW score     ──►  Leave unmatched, flag for follow-up
-        </pre>
+          <div class="diag-connector">▼</div>
+
+          <div class="diag-cascade-step diag-cascade-step-highlight">
+            <div class="diag-cascade-head">
+              <span class="diag-step-num">2</span>
+              <span class="diag-step-name">Fuzzy match</span>
+              <span class="diag-tag">this tool</span>
+            </div>
+            <p class="diag-cascade-desc">Returns scored candidates between 0 (nothing alike) and 1 (identical).</p>
+          </div>
+
+          <div class="diag-connector">▼</div>
+
+          <div class="diag-cascade-step">
+            <div class="diag-cascade-head">
+              <span class="diag-step-num">3</span>
+              <span class="diag-step-name">Apply a confidence threshold</span>
+            </div>
+            <div class="diag-cascade-outcomes">
+              <div class="diag-outcome diag-outcome-good">
+                <span class="diag-outcome-cond">High score</span>
+                <span class="diag-outcome-result">Auto-match.</span>
+              </div>
+              <div class="diag-outcome diag-outcome-warn">
+                <span class="diag-outcome-cond">Medium score</span>
+                <span class="diag-outcome-result">Human review queue.</span>
+              </div>
+              <div class="diag-outcome diag-outcome-low">
+                <span class="diag-outcome-cond">Low score</span>
+                <span class="diag-outcome-result">Leave unmatched, flag for follow-up.</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- Diagram 3 — the 3-stage pipeline -->
@@ -139,51 +201,77 @@ For each messy record:
           three so you can see the data transform.
         </p>
 
-        <pre class="diagram">
-┌──────────────────────── FUZZY MATCHING ─────────────────────────┐
-│                                                                 │
-│  YOU TYPE                                                       │
-│  "Jhon Smith"                                                   │
-│      │                                                          │
-│      ▼                                                          │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │  STAGE 1 · NORMALISATION  (a.k.a. cleaning)             │    │
-│  │  Tidy the string into a standard form. Rule-based,      │    │
-│  │  deterministic — same input always gives same output.   │    │
-│  │                                                         │    │
-│  │      "Jhon Smith"   ──►   "jhon smith"                  │    │
-│  └─────────────────────────────────────────────────────────┘    │
-│      │                                                          │
-│      ▼                                                          │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │  STAGE 2 · COMPARISON  (a.k.a. similarity scoring)      │    │
-│  │  Compare your cleaned string to every cleaned candidate │    │
-│  │  in the reference list. Each comparison returns a       │    │
-│  │  number between 0 (nothing alike) and 1 (identical).    │    │
-│  │                                                         │    │
-│  │      "jhon smith"  vs  "john smith"   →  0.94           │    │
-│  │      "jhon smith"  vs  "jon smyth"    →  0.84           │    │
-│  │      "jhon smith"  vs  "wei chen"     →  0.18           │    │
-│  │      ... 22 candidates in total                         │    │
-│  └─────────────────────────────────────────────────────────┘    │
-│      │                                                          │
-│      ▼                                                          │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │  STAGE 3 · RANKING  (a.k.a. picking the winner)         │    │
-│  │  Sort candidates by score, highest first. The top one   │    │
-│  │  is the likely match.                                   │    │
-│  │                                                         │    │
-│  │      N°1  John Smith   0.94   ◄── likely match          │    │
-│  │      N°2  Jon Smyth    0.84                             │    │
-│  │      N°3  ...                                           │    │
-│  └─────────────────────────────────────────────────────────┘    │
-│      │                                                          │
-│      ▼                                                          │
-│  THE LIKELY MATCH                                               │
-│  "John Smith"                                                   │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-        </pre>
+        <div class="diag diag-pipeline">
+          <div class="diag-io diag-io-input">
+            <div class="diag-io-label">You type</div>
+            <code class="diag-io-value">Jhon Smith</code>
+          </div>
+
+          <div class="diag-connector">▼</div>
+
+          <div class="diag-stage">
+            <div class="diag-stage-head">
+              <span class="diag-stage-num">N°1</span>
+              <span class="diag-stage-name">Normalisation</span>
+              <span class="diag-stage-alias">a.k.a. cleaning</span>
+            </div>
+            <p class="diag-stage-desc">Tidy the string into a standard form. Rule-based and deterministic — the same input always gives the same output.</p>
+            <div class="diag-stage-data">
+              <code>Jhon Smith</code>
+              <span class="diag-arrow">▶</span>
+              <code>jhon smith</code>
+            </div>
+          </div>
+
+          <div class="diag-connector">▼</div>
+
+          <div class="diag-stage">
+            <div class="diag-stage-head">
+              <span class="diag-stage-num">N°2</span>
+              <span class="diag-stage-name">Comparison</span>
+              <span class="diag-stage-alias">a.k.a. similarity scoring</span>
+            </div>
+            <p class="diag-stage-desc">Compare your cleaned string to every cleaned candidate in the reference list. Each comparison returns a number between 0 (nothing alike) and 1 (identical).</p>
+            <div class="diag-stage-data diag-stage-data-rows">
+              <div><code>jhon smith</code> <span class="diag-vs">vs</span> <code>john smith</code> <span class="diag-arrow">▶</span> <span class="diag-score">0.94</span></div>
+              <div><code>jhon smith</code> <span class="diag-vs">vs</span> <code>jon smyth</code> <span class="diag-arrow">▶</span> <span class="diag-score">0.84</span></div>
+              <div><code>jhon smith</code> <span class="diag-vs">vs</span> <code>wei chen</code> <span class="diag-arrow">▶</span> <span class="diag-score">0.18</span></div>
+              <div class="diag-stage-data-more">… 22 candidates in total</div>
+            </div>
+          </div>
+
+          <div class="diag-connector">▼</div>
+
+          <div class="diag-stage">
+            <div class="diag-stage-head">
+              <span class="diag-stage-num">N°3</span>
+              <span class="diag-stage-name">Ranking</span>
+              <span class="diag-stage-alias">a.k.a. picking the winner</span>
+            </div>
+            <p class="diag-stage-desc">Sort candidates by score, highest first. The top one is the likely match.</p>
+            <div class="diag-stage-data diag-stage-data-rows">
+              <div class="diag-rank-row diag-rank-winner">
+                <span class="diag-rank">N°1</span>
+                <span class="diag-rank-name">John Smith</span>
+                <span class="diag-score">0.94</span>
+                <span class="diag-rank-tag">likely match</span>
+              </div>
+              <div class="diag-rank-row">
+                <span class="diag-rank">N°2</span>
+                <span class="diag-rank-name">Jon Smyth</span>
+                <span class="diag-score">0.84</span>
+              </div>
+              <div class="diag-stage-data-more">…</div>
+            </div>
+          </div>
+
+          <div class="diag-connector">▼</div>
+
+          <div class="diag-io diag-io-output">
+            <div class="diag-io-label">The likely match</div>
+            <code class="diag-io-value">John Smith</code>
+          </div>
+        </div>
 
         <p class="aside">
           The <a href="index.html">tool</a> shows this pipeline in

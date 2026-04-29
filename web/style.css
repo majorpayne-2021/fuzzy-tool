@@ -871,23 +871,382 @@ footer a:hover { border-bottom-color: var(--accent); }
 }
 .chapter li { padding: 0.15rem 0; }
 
-/* ASCII diagram blocks */
-pre.diagram {
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  line-height: 1.45;
-  color: var(--text);
-  background: var(--bg-warmer);
-  padding: 1.5rem 1.5rem;
+/* ─── Concept diagrams (HTML/CSS) ─── */
+.diag {
   margin: 1.5rem 0 1.25rem;
-  border-radius: 2px;
-  border-left: 2px solid var(--accent);
-  overflow-x: auto;
-  white-space: pre;
-  -webkit-overflow-scrolling: touch;
+  font-family: var(--sans);
 }
-@media (max-width: 720px) {
-  pre.diagram { font-size: 0.7rem; padding: 1rem; }
+
+/* Generic node card */
+.diag-node {
+  background: var(--bg-warmer);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 1rem 1.25rem;
+}
+.diag-node-root {
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 1.1rem 1.25rem;
+}
+.diag-node-highlight {
+  background: var(--accent-soft);
+  border-left: 2px solid var(--accent);
+}
+.diag-node-sub-card { padding: 0.85rem 1.1rem; }
+
+.diag-node-label {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.diag-node-sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+/* Connector arrows between blocks */
+.diag-connector {
+  text-align: center;
+  color: var(--accent);
+  font-size: 0.85rem;
+  padding: 0.45rem 0;
+  line-height: 1;
+  user-select: none;
+}
+
+/* Pill-style tag (e.g. "this tool") */
+.diag-tag {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: var(--surface);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 500;
+  vertical-align: middle;
+  line-height: 1.2;
+}
+
+/* Tier — a vertical stack of children, left-rule connector */
+.diag-tier {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding-left: 1.25rem;
+  border-left: 1px dashed var(--rule);
+  margin-left: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Examples list inside hierarchy nodes */
+.diag-examples {
+  list-style: none;
+  padding: 0;
+  margin: 0.65rem 0 0;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+.diag-examples li {
+  padding: 0.2rem 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.diag-examples li::before {
+  content: "•";
+  color: var(--muted);
+  margin-right: 0.25rem;
+}
+.diag-examples-mono li > span:first-of-type {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  min-width: 4rem;
+}
+.diag-examples-mono li > code {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  background: var(--surface);
+  padding: 0.1rem 0.4rem;
+  border-radius: 2px;
+  border: 1px solid var(--rule);
+}
+
+/* Subtree nesting inside a node (for record linkage → exact/fuzzy) */
+.diag-subtree {
+  margin-top: 0.85rem;
+}
+.diag-subtree .diag-tier {
+  margin-left: 0;
+  padding-left: 1rem;
+  gap: 0.6rem;
+}
+
+/* ─── Cascade diagram ─── */
+.diag-cascade-step {
+  background: var(--bg-warmer);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 1rem 1.25rem;
+}
+.diag-cascade-step-highlight {
+  background: var(--accent-soft);
+  border-left: 2px solid var(--accent);
+}
+
+.diag-cascade-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.7rem;
+  flex-wrap: wrap;
+}
+.diag-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--surface);
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  font-style: italic;
+  line-height: 1;
+}
+.diag-step-name {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  color: var(--text);
+}
+.diag-step-aside {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.diag-cascade-desc {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--text-soft);
+  font-size: 0.98rem;
+}
+
+.diag-cascade-outcomes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.diag-outcome {
+  display: grid;
+  grid-template-columns: 1.25rem 8.5rem 1fr;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.5rem 0.75rem;
+  border-radius: 2px;
+  font-size: 0.92rem;
+}
+.diag-outcome-mark {
+  font-weight: 600;
+  font-family: var(--sans);
+}
+.diag-outcome-cond {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.diag-outcome-result {
+  color: var(--text);
+  font-family: var(--serif);
+  font-style: italic;
+}
+.diag-outcome-done { background: var(--good-soft); }
+.diag-outcome-done .diag-outcome-mark,
+.diag-outcome-done .diag-outcome-cond { color: var(--good); }
+.diag-outcome-next .diag-outcome-mark,
+.diag-outcome-next .diag-outcome-cond { color: var(--muted); }
+.diag-outcome-good { background: var(--good-soft); }
+.diag-outcome-good .diag-outcome-cond { color: var(--good); }
+.diag-outcome-warn { background: var(--warn-soft); }
+.diag-outcome-warn .diag-outcome-cond { color: var(--warn); }
+.diag-outcome-low { background: var(--bg-warmer); }
+.diag-outcome-low .diag-outcome-cond { color: var(--muted); }
+
+@media (max-width: 600px) {
+  .diag-outcome { grid-template-columns: 1rem auto 1fr; }
+}
+
+/* ─── Pipeline diagram ─── */
+.diag-io {
+  background: var(--bg-warmer);
+  padding: 0.9rem 1.25rem;
+  border-radius: 2px;
+  border: 1px solid var(--rule);
+}
+.diag-io-output { background: var(--accent-soft); border-color: var(--accent); }
+.diag-io-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+.diag-io-output .diag-io-label { color: var(--accent-deep); }
+.diag-io-value {
+  font-family: var(--mono);
+  font-size: 1rem;
+  color: var(--text);
+  background: transparent;
+  padding: 0;
+}
+
+.diag-stage {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 2px solid var(--accent);
+  border-radius: 2px;
+  padding: 1.25rem 1.5rem;
+}
+.diag-stage-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.55rem;
+}
+.diag-stage-num {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--accent);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+.diag-stage-name {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  color: var(--text);
+  font-weight: 500;
+}
+.diag-stage-alias {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.diag-stage-desc {
+  margin: 0 0 0.85rem;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+
+.diag-stage-data {
+  background: var(--bg-warmer);
+  padding: 0.65rem 0.9rem;
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+.diag-stage-data > code {
+  background: var(--surface);
+  padding: 0.1rem 0.35rem;
+  border-radius: 2px;
+  border: 1px solid var(--rule);
+}
+.diag-stage-data-rows { display: flex; flex-direction: column; gap: 0.25rem; }
+.diag-stage-data-rows > div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.diag-stage-data-rows code {
+  background: var(--surface);
+  padding: 0.05rem 0.35rem;
+  border-radius: 2px;
+  border: 1px solid var(--rule);
+  font-size: 0.82rem;
+}
+.diag-stage-data-more {
+  color: var(--muted);
+  font-style: italic;
+  font-family: var(--serif);
+  font-size: 0.86rem;
+  padding-top: 0.2rem;
+}
+.diag-vs {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.diag-arrow { color: var(--accent); font-size: 0.7rem; }
+.diag-score {
+  margin-left: auto;
+  color: var(--accent-deep);
+  font-weight: 600;
+  font-family: var(--mono);
+}
+
+.diag-rank-row {
+  padding: 0.25rem 0.4rem !important;
+}
+.diag-rank-winner {
+  background: var(--accent-soft);
+  border-radius: 2px;
+}
+.diag-rank {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--accent);
+  min-width: 2.5rem;
+  font-size: 0.95rem;
+}
+.diag-rank-name {
+  font-family: var(--serif);
+  color: var(--text);
+}
+.diag-rank-tag {
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  background: var(--surface);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  margin-left: 0.4rem;
+}
+
+@media (max-width: 600px) {
+  .diag-stage { padding: 1rem 1.1rem; }
+  .diag-stage-data-rows > div { font-size: 0.8rem; }
 }
 
 /* Aside note after a diagram */
