@@ -849,3 +849,62 @@ footer a:hover { border-bottom-color: var(--accent); }
   border-radius: 2px;
   font-size: 0.88rem;
 }
+
+/* ─── Concepts-page-specific ─── */
+.chapter {
+  padding: 2rem 0;
+  max-width: 40rem;
+}
+.chapter:first-of-type { padding-top: 1rem; }
+.chapter h2 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.6rem;
+  margin: 0 0 1rem;
+  color: var(--text);
+}
+.chapter p { color: var(--text-soft); margin: 0 0 1rem; }
+.chapter ol, .chapter ul {
+  color: var(--text-soft);
+  padding-left: 1.25rem;
+  margin: 0 0 1rem;
+}
+.chapter li { padding: 0.15rem 0; }
+
+/* ASCII diagram blocks */
+pre.diagram {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text);
+  background: var(--bg-warmer);
+  padding: 1.5rem 1.5rem;
+  margin: 1.5rem 0 1.25rem;
+  border-radius: 2px;
+  border-left: 2px solid var(--accent);
+  overflow-x: auto;
+  white-space: pre;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 720px) {
+  pre.diagram { font-size: 0.7rem; padding: 1rem; }
+}
+
+/* Aside note after a diagram */
+.aside {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--text-soft);
+  border-left: 2px solid var(--rule);
+  padding: 0.25rem 0 0.25rem 1rem;
+  margin: 1.25rem 0;
+  max-width: 38rem;
+}
+.aside strong {
+  font-style: normal;
+  color: var(--text);
+  font-weight: 500;
+}
+.aside a { color: var(--accent-deep); }

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>fuzzy-tool — what is fuzzy matching?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="page-nav">
+        <a href="index.html" class="page-nav-link">Try it</a>
+        <a href="concepts.html" class="page-nav-link active">What is fuzzy matching?</a>
+        <a href="methods.html" class="page-nav-link">The algorithms</a>
+      </nav>
+      <h1>What is fuzzy matching?</h1>
+      <p class="tagline">
+        A non-technical walk through where fuzzy matching fits in your
+        work, when to reach for it, and the three explicit stages of how
+        it actually figures out a match.
+      </p>
+    </header>
+
+    <main>
+      <section class="chapter">
+        <p class="lede">
+          Fuzzy matching is how a computer figures out that two strings
+          <em>probably</em> mean the same thing, even when they aren't
+          identical. <code>"Jhon Smith"</code> almost certainly meant
+          <code>"John Smith"</code>. A human reads that instantly. A
+          computer needs a small pipeline.
+        </p>
+      </section>
+
+      <!-- Diagram 1 — hierarchy -->
+      <section class="section">
+        <div class="eyebrow-row">
+          <span class="numeral">N°1</span>
+          <span class="eyebrow">Where it sits</span>
+        </div>
+        <h2 class="section-heading">Fuzzy matching lives inside data cleansing</h2>
+        <p class="lede">
+          When an analyst is cleaning data, they're really doing three
+          jobs at once. Validation checks values are sensible. Standardisation
+          forces a consistent format. Record linkage matches messy records
+          to a known list. Fuzzy matching is one technique inside that
+          last job — the one that handles imperfection.
+        </p>
+
+        <pre class="diagram">
+DATA CLEANSING  (making messy data usable)
+│
+├── VALIDATION
+│   Is this even a valid value?
+│       • Does this look like a properly-formatted email?
+│       • Is this postcode 4 digits?
+│       • Is this date plausible (not the year 9999)?
+│       • Is this name field empty when it shouldn't be?
+│
+├── STANDARDISATION
+│   Force every record into the same format.
+│       • Phone:    "0400 000 000"   ──►  "+61 400 000 000"
+│       • Address:  "10 Smith St"    ──►  "10 Smith Street"
+│       • Name:     "JOHN SMITH"     ──►  "John Smith"
+│       • Date:     "1/2/24"         ──►  "2024-02-01"
+│
+└── RECORD LINKAGE
+    Match a record to a known entity in your reference list.
+    │
+    ├── EXACT MATCH  — strings must be identical.
+    │                  First pass — cheap and unambiguous.
+    │
+    └── FUZZY MATCH  — tolerate typos and differences.
+                       Second pass — when exact match fails.
+                       ◄── this tool
+        </pre>
+
+        <p class="aside">
+          <strong>Standardisation vs normalisation</strong> — they overlap
+          in technique but live at different levels. Standardisation is
+          the dataset-level practice ("every phone number in our system
+          looks the same"). Normalisation is the per-string step inside
+          fuzzy matching, applied to a single value just before it gets
+          compared. You'll see normalisation in the pipeline below.
+        </p>
+      </section>
+
+      <!-- Diagram 2 — the cascade -->
+      <section class="section">
+        <div class="eyebrow-row">
+          <span class="numeral">N°2</span>
+          <span class="eyebrow">When to reach for it</span>
+        </div>
+        <h2 class="section-heading">Exact first, fuzzy second</h2>
+        <p class="lede">
+          Exact match and fuzzy match aren't alternatives — they run as a
+          cascade. Exact match is cheap and certain, so you do it first.
+          Fuzzy match is the expensive backup that handles the long tail
+          of typos, abbreviations, and reordering.
+        </p>
+
+        <pre class="diagram">
+For each messy record:
+
+   1. EXACT MATCH against the reference list
+        │
+        ├─ Found     ──►  Done. Match resolved.
+        │
+        └─ Not found
+                │
+                ▼
+   2. FUZZY MATCH  (returns scored candidates — this tool)
+                │
+                ▼
+   3. Apply a confidence threshold
+        │
+        ├─ HIGH score    ──►  Auto-match
+        ├─ MEDIUM score  ──►  Human review queue
+        └─ LOW score     ──►  Leave unmatched, flag for follow-up
+        </pre>
+      </section>
+
+      <!-- Diagram 3 — the 3-stage pipeline -->
+      <section class="section">
+        <div class="eyebrow-row">
+          <span class="numeral">N°3</span>
+          <span class="eyebrow">How it works, step by step</span>
+        </div>
+        <h2 class="section-heading">The three stages of a fuzzy match</h2>
+        <p class="lede">
+          Inside the box marked <em>fuzzy match</em>, three explicit
+          stages run in order. The same worked example flows through all
+          three so you can see the data transform.
+        </p>
+
+        <pre class="diagram">
+┌──────────────────────── FUZZY MATCHING ─────────────────────────┐
+│                                                                 │
+│  YOU TYPE                                                       │
+│  "Jhon Smith"                                                   │
+│      │                                                          │
+│      ▼                                                          │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  STAGE 1 · NORMALISATION  (a.k.a. cleaning)             │    │
+│  │  Tidy the string into a standard form. Rule-based,      │    │
+│  │  deterministic — same input always gives same output.   │    │
+│  │                                                         │    │
+│  │      "Jhon Smith"   ──►   "jhon smith"                  │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│      │                                                          │
+│      ▼                                                          │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  STAGE 2 · COMPARISON  (a.k.a. similarity scoring)      │    │
+│  │  Compare your cleaned string to every cleaned candidate │    │
+│  │  in the reference list. Each comparison returns a       │    │
+│  │  number between 0 (nothing alike) and 1 (identical).    │    │
+│  │                                                         │    │
+│  │      "jhon smith"  vs  "john smith"   →  0.94           │    │
+│  │      "jhon smith"  vs  "jon smyth"    →  0.84           │    │
+│  │      "jhon smith"  vs  "wei chen"     →  0.18           │    │
+│  │      ... 22 candidates in total                         │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│      │                                                          │
+│      ▼                                                          │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  STAGE 3 · RANKING  (a.k.a. picking the winner)         │    │
+│  │  Sort candidates by score, highest first. The top one   │    │
+│  │  is the likely match.                                   │    │
+│  │                                                         │    │
+│  │      N°1  John Smith   0.94   ◄── likely match          │    │
+│  │      N°2  Jon Smyth    0.84                             │    │
+│  │      N°3  ...                                           │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│      │                                                          │
+│      ▼                                                          │
+│  THE LIKELY MATCH                                               │
+│  "John Smith"                                                   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+        </pre>
+
+        <p class="aside">
+          The <a href="index.html">tool</a> shows this pipeline in
+          action — type a messy entry and watch each stage play out.
+          The <a href="methods.html">algorithms page</a> covers what
+          happens inside Stage 2: the four comparison techniques and
+          when each one earns its keep.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Part of a four-chapter showcase:
+        <strong>what fuzzy matching is</strong> •
+        <strong>how it's used</strong> (<a href="index.html">the tool</a>) •
+        <strong>the algorithms</strong> (<a href="methods.html">explainer</a>) •
+        <strong>a Python library</strong> (coming soon).
+      </p>
+    </footer>
+  </body>
+</html>

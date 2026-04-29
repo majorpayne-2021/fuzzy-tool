@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>fuzzy-tool — about the methods</title>
+    <title>fuzzy-tool — the algorithms</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -16,32 +16,34 @@
     <header>
       <nav class="page-nav">
         <a href="index.html" class="page-nav-link">Try it</a>
-        <a href="methods.html" class="page-nav-link active">About the methods</a>
+        <a href="concepts.html" class="page-nav-link">What is fuzzy matching?</a>
+        <a href="methods.html" class="page-nav-link active">The algorithms</a>
       </nav>
-      <h1>About the methods</h1>
+      <h1>The algorithms</h1>
       <p class="tagline">
-        Plain-English explanations of the five fuzzy matching methods used
-        in the tool. No code, no math — just the intuition and when each
-        method earns its keep.
+        Plain-English explanations of the four similarity-scoring
+        algorithms used inside Stage 2 of the fuzzy-matching pipeline.
+        No code, no math — just the intuition and when each one earns
+        its keep.
       </p>
     </header>
 
     <main>
       <section class="chapter">
-        <h2>Why more than one method?</h2>
+        <h2>Why more than one algorithm?</h2>
         <p>
-          There's no single "best" fuzzy matching algorithm. Each one
+          There's no single "best" similarity score. Each algorithm
           measures <em>a different kind of similarity</em>. A name with a
-          typo needs one method; a sentence with words reordered needs
-          another; a name that's spelled differently but pronounced the same
-          needs a third. The skill is picking the right tool — or combining
-          several — for the noise you actually have.
+          typo needs one approach; a sentence with words reordered needs
+          another; a partial match inside a longer string needs a third.
+          The skill is picking the right tool — or combining several — for
+          the noise you actually have.
         </p>
         <p>
-          Across every method below, <strong>normalization comes first</strong>.
-          Lowercasing, stripping punctuation, and folding accents do more
-          work than most algorithm choices. The methods below assume you've
-          already done that.
+          The four algorithms below all sit inside <strong>Stage 2</strong>
+          of the pipeline on the
+          <a href="concepts.html">concepts page</a>. They assume the
+          strings have already been normalised.
         </p>
       </section>
 
@@ -291,21 +293,19 @@
 
       <!-- Wrap-up -->
       <section class="chapter">
-        <h2>The practical takeaway</h2>
+        <h2>Combining algorithms in practice</h2>
         <p>
-          Real-world fuzzy matching pipelines usually <strong>combine</strong>
-          these. A common pattern for customer records:
+          Real pipelines often run <strong>several algorithms at once</strong>
+          and either take the highest score, a weighted sum, or feed all
+          the scores into a classifier. The
+          <a href="index.html">tool</a> shows every algorithm's score
+          side-by-side for each candidate, so you can see how they agree
+          and disagree on the same pair of strings.
         </p>
-        <ol>
-          <li><strong>Normalize aggressively</strong> (lowercase, strip punct, fold accents, sort tokens).</li>
-          <li><strong>Compute several scores</strong> — Jaro-Winkler for short strings, Jaccard tokens for word-order invariance, Jaccard n-grams for partial matches.</li>
-          <li><strong>Combine them</strong> — take the max, a weighted sum, or feed them into a classifier.</li>
-          <li><strong>Threshold for confidence</strong> — high-scoring pairs auto-match, borderline pairs go to human review.</li>
-        </ol>
         <p>
-          The tool on the <a href="index.html">other page</a> shows this
-          pipeline in action — see how toggling normalization steps or
-          swapping methods changes the winner.
+          For when each score crosses into "auto-match" or "needs human
+          review", see the threshold cascade on the
+          <a href="concepts.html">concepts page</a>.
         </p>
       </section>
     </main>
@@ -313,9 +313,9 @@
     <footer>
       <p>
         Part of a four-chapter showcase:
-        <strong>what fuzzy matching is</strong> •
-        <strong>how it's used</strong> •
-        <strong>the methods</strong> (<a href="index.html">the tool</a> and this page) •
+        <strong>what fuzzy matching is</strong> (<a href="concepts.html">concepts</a>) •
+        <strong>how it's used</strong> (<a href="index.html">the tool</a>) •
+        <strong>the algorithms</strong> (this page) •
         <strong>a Python library</strong> (coming soon).
       </p>
     </footer>
