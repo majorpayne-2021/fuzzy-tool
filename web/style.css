@@ -781,6 +781,24 @@ footer a {
 }
 footer a:hover { border-bottom-color: var(--accent); }
 
+footer .footer-name {
+  font-family: var(--serif);
+  font-style: normal;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+footer .footer-name strong { font-weight: 500; }
+footer .footer-tagline { margin-bottom: 0.6rem; }
+footer .footer-links {
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+footer .footer-links a { margin: 0 0.25rem; }
+
 /* ─── Methods-page-specific ─── */
 .method-card-page {
   padding: 3rem 0;
@@ -1098,25 +1116,25 @@ html { scroll-behavior: smooth; }
 }
 .svg-stage-desc {
   font-family: var(--sans);
-  font-size: 11px;
+  font-size: 14px;
   fill: var(--text-soft);
-  font-weight: 300;
+  font-weight: 400;
 }
 .svg-mono {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 13px;
   fill: var(--text);
 }
-.svg-arrow-glyph { font-size: 9px; fill: var(--accent); }
+.svg-arrow-glyph { font-size: 11px; fill: var(--accent); }
 .svg-vs {
   font-family: var(--serif);
   font-style: italic;
-  font-size: 11px;
+  font-size: 13px;
   fill: var(--muted);
 }
 .svg-score {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   fill: var(--accent-deep);
 }

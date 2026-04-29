@@ -412,7 +412,7 @@
         <figure class="svg-figure">
           <svg
             class="svg-pipeline"
-            viewBox="0 0 720 720"
+            viewBox="0 0 720 870"
             role="img"
             aria-labelledby="pipeTitle pipeDesc"
             xmlns="http://www.w3.org/2000/svg"
@@ -448,78 +448,78 @@
 
             <!-- Stage 1: Normalisation -->
             <g class="svg-stage">
-              <rect x="60" y="110" width="600" height="120" rx="3" />
+              <rect x="60" y="110" width="600" height="170" rx="3" />
               <text x="80" y="138" class="svg-stage-num">Stage 1</text>
-              <text x="80" y="162" class="svg-stage-title">Normalisation</text>
-              <text x="220" y="162" class="svg-stage-alias">a.k.a. cleaning</text>
-              <text x="80" y="186" class="svg-stage-desc">Tidy the string into a standard form. Rule-based and deterministic —</text>
-              <text x="80" y="202" class="svg-stage-desc">the same input always gives the same output.</text>
-              <g transform="translate(80, 220)">
+              <text x="80" y="164" class="svg-stage-title">Normalisation</text>
+              <text x="220" y="164" class="svg-stage-alias">a.k.a. cleaning</text>
+              <text x="80" y="194" class="svg-stage-desc">Tidy each string into a consistent form: lowercase, strip punctuation, collapse</text>
+              <text x="80" y="216" class="svg-stage-desc">whitespace. Apply identical rules to your input and every reference entry.</text>
+              <g transform="translate(80, 258)">
                 <text x="0" y="0" class="svg-mono">Jhon Smith</text>
-                <text x="140" y="0" class="svg-arrow-glyph">▶</text>
-                <text x="190" y="0" class="svg-mono">jhon smith</text>
+                <text x="170" y="0" class="svg-arrow-glyph">▶</text>
+                <text x="200" y="0" class="svg-mono">jhon smith</text>
               </g>
             </g>
 
-            <line x1="360" y1="230" x2="360" y2="265" class="svg-line" marker-end="url(#arrow2)" />
+            <line x1="360" y1="280" x2="360" y2="315" class="svg-line" marker-end="url(#arrow2)" />
 
             <!-- Stage 2: Comparison -->
             <g class="svg-stage">
-              <rect x="60" y="265" width="600" height="195" rx="3" />
-              <text x="80" y="293" class="svg-stage-num">Stage 2</text>
-              <text x="80" y="317" class="svg-stage-title">Comparison</text>
-              <text x="200" y="317" class="svg-stage-alias">a.k.a. similarity scoring</text>
-              <text x="80" y="341" class="svg-stage-desc">Compare your cleaned string to every cleaned candidate.</text>
-              <text x="80" y="357" class="svg-stage-desc">Each comparison returns a number from 0 to 1.</text>
-              <g transform="translate(80, 385)">
+              <rect x="60" y="315" width="600" height="245" rx="3" />
+              <text x="80" y="343" class="svg-stage-num">Stage 2</text>
+              <text x="80" y="369" class="svg-stage-title">Comparison</text>
+              <text x="200" y="369" class="svg-stage-alias">a.k.a. similarity scoring</text>
+              <text x="80" y="399" class="svg-stage-desc">Score the cleaned input against every cleaned candidate. Each pair returns a</text>
+              <text x="80" y="421" class="svg-stage-desc">number between 0 (nothing in common) and 1 (perfectly identical strings).</text>
+              <g transform="translate(80, 460)">
                 <text x="0" y="0" class="svg-mono">jhon smith</text>
-                <text x="140" y="0" class="svg-vs">vs</text>
-                <text x="190" y="0" class="svg-mono">john smith</text>
-                <text x="380" y="0" class="svg-arrow-glyph">▶</text>
-                <text x="420" y="0" class="svg-score">0.94</text>
+                <text x="170" y="0" class="svg-vs">vs</text>
+                <text x="200" y="0" class="svg-mono">john smith</text>
+                <text x="400" y="0" class="svg-arrow-glyph">▶</text>
+                <text x="440" y="0" class="svg-score">0.94</text>
               </g>
-              <g transform="translate(80, 405)">
+              <g transform="translate(80, 484)">
                 <text x="0" y="0" class="svg-mono">jhon smith</text>
-                <text x="140" y="0" class="svg-vs">vs</text>
-                <text x="190" y="0" class="svg-mono">jon smyth</text>
-                <text x="380" y="0" class="svg-arrow-glyph">▶</text>
-                <text x="420" y="0" class="svg-score">0.84</text>
+                <text x="170" y="0" class="svg-vs">vs</text>
+                <text x="200" y="0" class="svg-mono">jon smyth</text>
+                <text x="400" y="0" class="svg-arrow-glyph">▶</text>
+                <text x="440" y="0" class="svg-score">0.84</text>
               </g>
-              <g transform="translate(80, 425)">
+              <g transform="translate(80, 508)">
                 <text x="0" y="0" class="svg-mono">jhon smith</text>
-                <text x="140" y="0" class="svg-vs">vs</text>
-                <text x="190" y="0" class="svg-mono">wei chen</text>
-                <text x="380" y="0" class="svg-arrow-glyph">▶</text>
-                <text x="420" y="0" class="svg-score">0.18</text>
+                <text x="170" y="0" class="svg-vs">vs</text>
+                <text x="200" y="0" class="svg-mono">wei chen</text>
+                <text x="400" y="0" class="svg-arrow-glyph">▶</text>
+                <text x="440" y="0" class="svg-score">0.18</text>
               </g>
-              <text x="640" y="450" class="svg-stage-desc" text-anchor="end">…22 candidates total</text>
+              <text x="640" y="540" class="svg-stage-desc" text-anchor="end">…22 candidates total</text>
             </g>
 
-            <line x1="360" y1="460" x2="360" y2="495" class="svg-line" marker-end="url(#arrow2)" />
+            <line x1="360" y1="560" x2="360" y2="595" class="svg-line" marker-end="url(#arrow2)" />
 
             <!-- Stage 3: Ranking -->
             <g class="svg-stage">
-              <rect x="60" y="495" width="600" height="120" rx="3" />
-              <text x="80" y="523" class="svg-stage-num">Stage 3</text>
-              <text x="80" y="547" class="svg-stage-title">Ranking</text>
-              <text x="160" y="547" class="svg-stage-alias">a.k.a. picking the winner</text>
-              <text x="80" y="571" class="svg-stage-desc">Sort candidates by score, highest first. The top one is the</text>
-              <text x="80" y="587" class="svg-stage-desc">likely match.</text>
-              <g transform="translate(80, 605)">
+              <rect x="60" y="595" width="600" height="170" rx="3" />
+              <text x="80" y="623" class="svg-stage-num">Stage 3</text>
+              <text x="80" y="649" class="svg-stage-title">Ranking</text>
+              <text x="160" y="649" class="svg-stage-alias">a.k.a. picking the winner</text>
+              <text x="80" y="679" class="svg-stage-desc">Sort the scored candidates, highest first. The top entry is the likely match —</text>
+              <text x="80" y="701" class="svg-stage-desc">but apply your confidence threshold before treating any score as a final answer.</text>
+              <g transform="translate(80, 743)">
                 <text x="0" y="0" class="svg-rank-marker">N°1</text>
-                <text x="190" y="0" class="svg-mono">John Smith</text>
-                <text x="420" y="0" class="svg-score">0.94</text>
-                <text x="490" y="0" class="svg-rank-tag">likely match</text>
+                <text x="200" y="0" class="svg-mono">John Smith</text>
+                <text x="440" y="0" class="svg-score">0.94</text>
+                <text x="500" y="0" class="svg-rank-tag">likely match</text>
               </g>
             </g>
 
-            <line x1="360" y1="615" x2="360" y2="650" class="svg-line" marker-end="url(#arrow2)" />
+            <line x1="360" y1="765" x2="360" y2="800" class="svg-line" marker-end="url(#arrow2)" />
 
             <!-- Output -->
             <g class="svg-io svg-io-output">
-              <rect x="200" y="650" width="320" height="55" rx="3" />
-              <text x="360" y="672" class="svg-io-label" text-anchor="middle">THE LIKELY MATCH</text>
-              <text x="360" y="694" class="svg-io-value" text-anchor="middle">John Smith</text>
+              <rect x="200" y="800" width="320" height="55" rx="3" />
+              <text x="360" y="822" class="svg-io-label" text-anchor="middle">THE LIKELY MATCH</text>
+              <text x="360" y="844" class="svg-io-value" text-anchor="middle">John Smith</text>
             </g>
           </svg>
           <figcaption class="svg-caption">
@@ -538,12 +538,12 @@
     </main>
 
     <footer>
-      <p>
-        Part of a four-chapter showcase:
-        <strong>what fuzzy matching is</strong> •
-        <strong>how it's used</strong> (<a href="index.html">the tool</a>) •
-        <strong>the algorithms</strong> (<a href="methods.html">explainer</a>) •
-        <strong>a Python library</strong> (coming soon).
+      <p class="footer-name"><strong>Jennifer Payne</strong> — data scientist</p>
+      <p class="footer-tagline">Making the complex simple, one tech project at a time.</p>
+      <p class="footer-links">
+        <a href="https://github.com/majorpayne-2021" target="_blank" rel="noopener">GitHub</a>
+        ·
+        <a href="https://www.linkedin.com/in/jenniferapayne25/" target="_blank" rel="noopener">LinkedIn</a>
       </p>
     </footer>
   </body>
