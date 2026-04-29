@@ -21,9 +21,14 @@
       </nav>
       <h1>What is fuzzy matching?</h1>
       <p class="tagline">
-        A non-technical walk through where fuzzy matching fits in your
-        work, when to reach for it, and the three explicit stages of how
-        it actually figures out a match.
+        Fuzzy matching is what an analyst reaches for when an exact match
+        isn't enough — when typos, abbreviations, or reordered words stop
+        two obviously-related strings from comparing equal. If your
+        day-to-day involves deduplicating records, cleaning up a customer
+        list, or joining free-text data against a reference table, this
+        page covers where fuzzy matching fits in that work, what you
+        need lined up before you run it, and how it actually decides
+        what counts as a match.
       </p>
     </header>
 
@@ -36,249 +41,498 @@
           <code>"John Smith"</code>. A human reads that instantly. A
           computer needs a small pipeline.
         </p>
+
+        <nav class="toc" aria-label="On this page">
+          <span class="toc-label">In this chapter</span>
+          <ol class="toc-list">
+            <li>
+              <a href="#checklist" class="toc-link">
+                <span class="toc-num">N°1</span>
+                Before you start — the analyst's checklist
+              </a>
+            </li>
+            <li>
+              <a href="#workflow" class="toc-link">
+                <span class="toc-num">N°2</span>
+                The five-step workflow
+              </a>
+            </li>
+            <li>
+              <a href="#fuzzy-pipeline" class="toc-link">
+                <span class="toc-num">N°3</span>
+                Inside Step 4 — the three stages of a fuzzy match
+              </a>
+            </li>
+          </ol>
+        </nav>
       </section>
 
-      <!-- Diagram 1 — hierarchy -->
-      <section class="section">
+      <!-- Analyst's checklist -->
+      <section class="section" id="checklist">
         <div class="eyebrow-row">
           <span class="numeral">N°1</span>
-          <span class="eyebrow">Where it sits</span>
+          <span class="eyebrow">Before you start</span>
         </div>
-        <h2 class="section-heading">Fuzzy matching lives inside data cleansing</h2>
+        <h2 class="section-heading">The analyst's checklist</h2>
         <p class="lede">
-          When an analyst is cleaning data, they're really doing three
-          jobs at once. Validation checks values are sensible. Standardisation
-          forces a consistent format. Record linkage matches messy records
-          to a known list. Fuzzy matching is one technique inside that
-          last job — the one that handles imperfection.
+          Six things you want lined up before you run the pipeline.
+          Skipping any of them tends to show up later as a confusing
+          result or a meeting about whether a match is "really" a match.
         </p>
 
-        <div class="diag diag-hierarchy">
-          <div class="diag-node diag-node-root">
-            <div class="diag-node-label">Data cleansing</div>
-            <div class="diag-node-sub">making messy data usable</div>
-          </div>
+        <div class="table-wrap">
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th class="num-col">#</th>
+                <th>What you need</th>
+                <th>Why</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="num-col">1</td>
+                <td><strong>Input strings</strong></td>
+                <td>The messy data you want to match. Can be one entry, a spreadsheet column, or a stream.</td>
+                <td><code>Jhon Smith</code>, <code>10 smith st</code></td>
+              </tr>
+              <tr>
+                <td class="num-col">2</td>
+                <td><strong>Reference list</strong></td>
+                <td>The canonical, authoritative values you're matching <em>against</em>. Without this, there's nothing to match to.</td>
+                <td>A customer master list, postcode register, product catalogue</td>
+              </tr>
+              <tr>
+                <td class="num-col">3</td>
+                <td><strong>Knowledge of the noise</strong></td>
+                <td>What kinds of errors do you actually expect? Drives which algorithm earns its keep.</td>
+                <td>Typos? Reordered words? Abbreviations? Phonetic variants?</td>
+              </tr>
+              <tr>
+                <td class="num-col">4</td>
+                <td><strong>Normalisation rules</strong></td>
+                <td>Cleanups applied before any scoring. Must be identical on both sides — input and reference.</td>
+                <td>Lowercase, strip punctuation, remove accents, expand <code>St</code>→<code>Street</code></td>
+              </tr>
+              <tr>
+                <td class="num-col">5</td>
+                <td><strong>Confidence thresholds</strong></td>
+                <td>Cutoffs for auto-match, human review, and unmatched. A <em>business</em> decision, not a technical one. <span class="ref-note">Only needed when fuzzy match runs — exact match is unambiguous and doesn't use a threshold.</span></td>
+                <td>≥0.90 auto · 0.70–0.90 review · &lt;0.70 unmatched</td>
+              </tr>
+              <tr>
+                <td class="num-col">6</td>
+                <td><strong>A review process</strong></td>
+                <td>Where flagged matches go, who looks at them, how fast, and where the final answer is recorded.</td>
+                <td>Queue in a sheet → reviewed daily → outcome written back to source</td>
+              </tr>
+              <tr>
+                <td class="num-col">7</td>
+                <td><strong>A candidate-generation strategy</strong></td>
+                <td>Only matters if the reference list is large. You can't realistically score one input against a million records — you need a way to shortlist first. <span class="ref-note">See the note below the workflow.</span></td>
+                <td>Block by surname initial, postcode prefix, or trigram index</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-          <div class="diag-connector">▼</div>
+      <!-- Combined flowchart -->
+      <section class="section" id="workflow">
+        <div class="eyebrow-row">
+          <span class="numeral">N°2</span>
+          <span class="eyebrow">Where it sits & when it runs</span>
+        </div>
+        <h2 class="section-heading">The five-step workflow</h2>
+        <p class="lede">
+          Data cleansing has three branches: validation, standardisation,
+          and record linkage. Fuzzy matching lives inside record linkage —
+          but it only fires when exact matching has already failed. Here
+          is the whole pipeline as a single picture.
+        </p>
 
-          <div class="diag-tier">
-            <div class="diag-node">
-              <div class="diag-node-label">Validation</div>
-              <div class="diag-node-sub">Is this even a valid value?</div>
-              <ul class="diag-examples">
-                <li>Does this look like a properly-formatted email?</li>
-                <li>Is this postcode 4 digits?</li>
-                <li>Is this date plausible (not the year 9999)?</li>
-                <li>Is this name field empty when it shouldn't be?</li>
-              </ul>
-            </div>
+        <figure class="svg-figure">
+          <svg
+            class="svg-flow"
+            viewBox="0 0 880 760"
+            role="img"
+            aria-labelledby="flowTitle flowDesc"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <title id="flowTitle">The five-step data cleansing workflow</title>
+            <desc id="flowDesc">
+              Data cleansing splits into validation, standardisation, and
+              record linkage. Record linkage runs exact match first, then
+              fuzzy match on failure, then a confidence threshold which
+              produces auto-match, human-review, or unmatched outcomes.
+            </desc>
 
-            <div class="diag-node">
-              <div class="diag-node-label">Standardisation</div>
-              <div class="diag-node-sub">Force every record into the same format.</div>
-              <ul class="diag-examples diag-examples-mono">
-                <li><span>Phone</span><code>0400 000 000</code><span class="diag-arrow">▶</span><code>+61 400 000 000</code></li>
-                <li><span>Address</span><code>10 Smith St</code><span class="diag-arrow">▶</span><code>10 Smith Street</code></li>
-                <li><span>Name</span><code>JOHN SMITH</code><span class="diag-arrow">▶</span><code>John Smith</code></li>
-                <li><span>Date</span><code>1/2/24</code><span class="diag-arrow">▶</span><code>2024-02-01</code></li>
-              </ul>
-            </div>
+            <defs>
+              <marker
+                id="arrow"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" class="svg-arrowhead" />
+              </marker>
+            </defs>
 
-            <div class="diag-node">
-              <div class="diag-node-label">Record linkage</div>
-              <div class="diag-node-sub">Match a record to a known entity in your reference list.</div>
-              <div class="diag-subtree">
-                <div class="diag-connector">▼</div>
-                <div class="diag-tier">
-                  <div class="diag-node diag-node-sub-card">
-                    <div class="diag-node-label">Exact match</div>
-                    <div class="diag-node-sub">Strings must be identical. First pass — cheap and unambiguous.</div>
-                  </div>
-                  <div class="diag-node diag-node-sub-card diag-node-highlight">
-                    <div class="diag-node-label">
-                      Fuzzy match
-                      <span class="diag-tag">this tool</span>
-                    </div>
-                    <div class="diag-node-sub">Tolerate typos and differences. Second pass — when exact match fails.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+            <!-- Root: Data cleansing -->
+            <g class="svg-node svg-node-root">
+              <rect x="340" y="20" width="200" height="60" rx="3" />
+              <text x="440" y="46" class="svg-node-title" text-anchor="middle">Data cleansing</text>
+              <text x="440" y="64" class="svg-node-sub" text-anchor="middle">making messy data usable</text>
+            </g>
+
+            <!-- Lines: root → tier 2 (hub-and-spoke) -->
+            <line x1="440" y1="80" x2="440" y2="110" class="svg-line" />
+            <line x1="150" y1="110" x2="730" y2="110" class="svg-line" />
+            <line x1="150" y1="110" x2="150" y2="140" class="svg-line" marker-end="url(#arrow)" />
+            <line x1="390" y1="110" x2="390" y2="140" class="svg-line" marker-end="url(#arrow)" />
+            <line x1="730" y1="110" x2="730" y2="140" class="svg-line" marker-end="url(#arrow)" />
+
+            <!-- Tier 2: Validate / Standardise / Record linkage -->
+            <g class="svg-node">
+              <rect x="60" y="140" width="180" height="85" rx="3" />
+              <text x="80" y="166" class="svg-step-num">Step 1</text>
+              <text x="150" y="190" class="svg-node-title" text-anchor="middle">Validate</text>
+              <text x="150" y="210" class="svg-node-sub" text-anchor="middle">Is the value sensible at all?</text>
+            </g>
+
+            <g class="svg-node">
+              <rect x="290" y="140" width="200" height="85" rx="3" />
+              <text x="310" y="166" class="svg-step-num">Step 2</text>
+              <text x="390" y="190" class="svg-node-title" text-anchor="middle">Standardise</text>
+              <text x="390" y="210" class="svg-node-sub" text-anchor="middle">Force a consistent format</text>
+            </g>
+
+            <g class="svg-node svg-node-umbrella">
+              <rect x="540" y="140" width="380" height="85" rx="3" />
+              <text x="730" y="178" class="svg-node-title" text-anchor="middle">Record linkage</text>
+              <text x="730" y="200" class="svg-node-sub" text-anchor="middle">Match a record to a known entity in your reference list</text>
+            </g>
+
+            <!-- Lines: Record linkage → cascade (Steps 3-5) -->
+            <line x1="730" y1="225" x2="730" y2="265" class="svg-line" />
+            <line x1="150" y1="265" x2="730" y2="265" class="svg-line" />
+            <line x1="150" y1="265" x2="150" y2="295" class="svg-line" marker-end="url(#arrow)" />
+            <line x1="440" y1="265" x2="440" y2="295" class="svg-line" marker-end="url(#arrow)" />
+            <line x1="730" y1="265" x2="730" y2="295" class="svg-line" marker-end="url(#arrow)" />
+
+            <!-- Cascade row: Step 3 / Step 4 / Step 5 -->
+            <g class="svg-node">
+              <rect x="60" y="295" width="180" height="95" rx="3" />
+              <text x="80" y="321" class="svg-step-num">Step 3</text>
+              <text x="150" y="345" class="svg-node-title" text-anchor="middle">Exact match</text>
+              <text x="150" y="365" class="svg-node-sub" text-anchor="middle">Identical strings only.</text>
+              <text x="150" y="380" class="svg-node-sub" text-anchor="middle">First pass — cheap.</text>
+            </g>
+
+            <g class="svg-node svg-node-highlight">
+              <rect x="350" y="295" width="180" height="95" rx="3" />
+              <text x="370" y="321" class="svg-step-num">Step 4</text>
+              <text x="440" y="345" class="svg-node-title" text-anchor="middle">Fuzzy match</text>
+              <text x="440" y="365" class="svg-node-sub" text-anchor="middle">Tolerate typos &amp; differences.</text>
+              <text x="440" y="380" class="svg-node-sub" text-anchor="middle">Returns scores 0–1.</text>
+              <g class="svg-pill" transform="translate(515, 305)">
+                <rect x="0" y="0" width="60" height="18" rx="9" />
+                <text x="30" y="13" class="svg-pill-text" text-anchor="middle">this tool</text>
+              </g>
+            </g>
+
+            <g class="svg-node">
+              <rect x="640" y="295" width="180" height="95" rx="3" />
+              <text x="660" y="321" class="svg-step-num">Step 5</text>
+              <text x="730" y="345" class="svg-node-title" text-anchor="middle">Apply threshold</text>
+              <text x="730" y="365" class="svg-node-sub" text-anchor="middle">Decide what to do with</text>
+              <text x="730" y="380" class="svg-node-sub" text-anchor="middle">the score.</text>
+            </g>
+
+            <!-- Step 3 → Step 4 (fails) -->
+            <line x1="240" y1="342" x2="346" y2="342" class="svg-line" marker-end="url(#arrow)" />
+            <text x="293" y="334" class="svg-edge-label" text-anchor="middle">fails</text>
+
+            <!-- Step 4 → Step 5 (score 0–1) -->
+            <line x1="530" y1="342" x2="636" y2="342" class="svg-line" marker-end="url(#arrow)" />
+            <text x="583" y="334" class="svg-edge-label" text-anchor="middle">score 0–1</text>
+
+            <!-- Step 5 → outcomes -->
+            <line x1="730" y1="390" x2="730" y2="430" class="svg-line" />
+            <line x1="200" y1="430" x2="730" y2="430" class="svg-line" />
+            <line x1="200" y1="430" x2="200" y2="475" class="svg-line" marker-end="url(#arrow)" />
+            <line x1="440" y1="430" x2="440" y2="475" class="svg-line" marker-end="url(#arrow)" />
+            <line x1="680" y1="430" x2="680" y2="475" class="svg-line" marker-end="url(#arrow)" />
+
+            <!-- Outcome row -->
+            <g class="svg-node svg-node-good">
+              <rect x="110" y="475" width="180" height="75" rx="3" />
+              <text x="200" y="500" class="svg-outcome-cond" text-anchor="middle">High score</text>
+              <text x="200" y="525" class="svg-node-title" text-anchor="middle">Auto-match</text>
+            </g>
+
+            <g class="svg-node svg-node-warn">
+              <rect x="350" y="475" width="180" height="75" rx="3" />
+              <text x="440" y="500" class="svg-outcome-cond" text-anchor="middle">Medium score</text>
+              <text x="440" y="525" class="svg-node-title" text-anchor="middle">Human review</text>
+            </g>
+
+            <g class="svg-node svg-node-muted">
+              <rect x="590" y="475" width="180" height="75" rx="3" />
+              <text x="680" y="500" class="svg-outcome-cond" text-anchor="middle">Low score</text>
+              <text x="680" y="525" class="svg-node-title" text-anchor="middle">Unmatched</text>
+            </g>
+
+            <!-- Bottom note -->
+            <text x="440" y="600" class="svg-bottom-note" text-anchor="middle">
+              ↓ Step 4 in detail ↓
+            </text>
+          </svg>
+          <figcaption class="svg-caption">
+            The five-step data cleansing workflow. Steps 3–5 run as a
+            cascade inside record linkage.
+          </figcaption>
+        </figure>
+
+        <!-- Step reference table -->
+        <div class="table-wrap">
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th class="num-col">Step</th>
+                <th>Name</th>
+                <th>What it does</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="num-col">1</td>
+                <td><strong>Validate</strong></td>
+                <td>Is the value sensible at all? Reject obviously broken records before you do anything else.</td>
+                <td>Email contains <code>@</code>; postcode is 4 digits</td>
+              </tr>
+              <tr>
+                <td class="num-col">2</td>
+                <td><strong>Standardise</strong></td>
+                <td>Force every record into the same format so later steps can compare like-for-like.</td>
+                <td><code>JOHN SMITH</code> → <code>John Smith</code></td>
+              </tr>
+              <tr>
+                <td class="num-col">3</td>
+                <td><strong>Exact match</strong></td>
+                <td>Is the value in the reference list verbatim? Cheap, fast, unambiguous — try this first.</td>
+                <td><code>John Smith</code> == <code>John Smith</code> ✓</td>
+              </tr>
+              <tr>
+                <td class="num-col ref-table-highlight">4</td>
+                <td class="ref-table-highlight"><strong>Fuzzy match</strong> <span class="ref-tag">this tool</span></td>
+                <td class="ref-table-highlight">When exact fails, score similarity 0–1 against every candidate in the reference list.</td>
+                <td class="ref-table-highlight"><code>Jhon Smith</code> → <code>John Smith</code> (0.94)</td>
+              </tr>
+              <tr>
+                <td class="num-col">5</td>
+                <td><strong>Apply threshold</strong></td>
+                <td>Decide what the score means: auto-match, send to human review, or leave unmatched.</td>
+                <td>0.94 → auto-match</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <p class="aside">
           <strong>Standardisation vs normalisation</strong> — they overlap
-          in technique but live at different levels. Standardisation is
-          the dataset-level practice ("every phone number in our system
-          looks the same"). Normalisation is the per-string step inside
-          fuzzy matching, applied to a single value just before it gets
-          compared. You'll see normalisation in the pipeline below.
-        </p>
-      </section>
-
-      <!-- Diagram 2 — the cascade -->
-      <section class="section">
-        <div class="eyebrow-row">
-          <span class="numeral">N°2</span>
-          <span class="eyebrow">When to reach for it</span>
-        </div>
-        <h2 class="section-heading">Exact first, fuzzy second</h2>
-        <p class="lede">
-          Exact match and fuzzy match aren't alternatives — they run as a
-          cascade. Exact match is cheap and certain, so you do it first.
-          Fuzzy match is the expensive backup that handles the long tail
-          of typos, abbreviations, and reordering.
+          in technique but live at different levels. Standardisation (Step
+          2 above) is the dataset-level practice: <em>every phone number
+          in our system should look the same</em>. Normalisation is the
+          per-string step inside Step 4, applied to a single value just
+          before it gets compared. You'll see normalisation in the
+          pipeline below.
         </p>
 
-        <div class="diag diag-cascade">
-          <div class="diag-cascade-step">
-            <div class="diag-cascade-head">
-              <span class="diag-step-num">1</span>
-              <span class="diag-step-name">Exact match</span>
-              <span class="diag-step-aside">against the reference list</span>
-            </div>
-            <div class="diag-cascade-outcomes">
-              <div class="diag-outcome diag-outcome-done">
-                <span class="diag-outcome-mark" aria-hidden="true">✓</span>
-                <span class="diag-outcome-cond">Found</span>
-                <span class="diag-outcome-result">Done. Match resolved.</span>
-              </div>
-              <div class="diag-outcome diag-outcome-next">
-                <span class="diag-outcome-mark" aria-hidden="true">✗</span>
-                <span class="diag-outcome-cond">Not found</span>
-                <span class="diag-outcome-result">Continue to fuzzy match.</span>
-              </div>
-            </div>
+        <div class="callout">
+          <div class="callout-head">
+            <span class="callout-eyebrow">In practice</span>
+            <span class="callout-title">You don't score against millions</span>
           </div>
-
-          <div class="diag-connector">▼</div>
-
-          <div class="diag-cascade-step diag-cascade-step-highlight">
-            <div class="diag-cascade-head">
-              <span class="diag-step-num">2</span>
-              <span class="diag-step-name">Fuzzy match</span>
-              <span class="diag-tag">this tool</span>
-            </div>
-            <p class="diag-cascade-desc">Returns scored candidates between 0 (nothing alike) and 1 (identical).</p>
-          </div>
-
-          <div class="diag-connector">▼</div>
-
-          <div class="diag-cascade-step">
-            <div class="diag-cascade-head">
-              <span class="diag-step-num">3</span>
-              <span class="diag-step-name">Apply a confidence threshold</span>
-            </div>
-            <div class="diag-cascade-outcomes">
-              <div class="diag-outcome diag-outcome-good">
-                <span class="diag-outcome-cond">High score</span>
-                <span class="diag-outcome-result">Auto-match.</span>
-              </div>
-              <div class="diag-outcome diag-outcome-warn">
-                <span class="diag-outcome-cond">Medium score</span>
-                <span class="diag-outcome-result">Human review queue.</span>
-              </div>
-              <div class="diag-outcome diag-outcome-low">
-                <span class="diag-outcome-cond">Low score</span>
-                <span class="diag-outcome-result">Leave unmatched, flag for follow-up.</span>
-              </div>
-            </div>
-          </div>
+          <p>
+            The diagram shows fuzzy match producing a score for every
+            candidate in the reference list. That works for the 22 entries
+            in this tool. It does not work for a CRM with a million
+            customers — that would be a million similarity calculations
+            <em>per messy input</em>.
+          </p>
+          <p>
+            In production, fuzzy match runs as a <strong>two-step</strong>
+            process inside Step 4:
+          </p>
+          <ol class="callout-list">
+            <li>
+              <strong>Candidate generation</strong> (a.k.a. <em>blocking</em>) —
+              cheaply shortlist a few dozen candidates that <em>could</em>
+              be a match. Common techniques: blocking keys (only compare
+              records sharing the same surname initial or postcode
+              prefix), trigram indexes (PostgreSQL <code>pg_trgm</code>,
+              Elasticsearch), or locality-sensitive hashing (MinHash / LSH).
+            </li>
+            <li>
+              <strong>Scoring</strong> — run the expensive similarity
+              algorithms on the shortlist only.
+            </li>
+          </ol>
+          <p>
+            A good blocking strategy turns a million-row problem into a
+            fifty-row problem before the similarity algorithm sees a
+            single character. If you're working with a real-world
+            reference list, look at libraries like
+            <code>recordlinkage</code>, <code>dedupe</code>, or
+            <code>splink</code> — they handle blocking and scoring as one
+            pipeline.
+          </p>
         </div>
       </section>
 
-      <!-- Diagram 3 — the 3-stage pipeline -->
-      <section class="section">
+      <!-- The 3-stage fuzzy match pipeline -->
+      <section class="section" id="fuzzy-pipeline">
         <div class="eyebrow-row">
           <span class="numeral">N°3</span>
-          <span class="eyebrow">How it works, step by step</span>
+          <span class="eyebrow">Inside Step 4 — fuzzy match</span>
         </div>
         <h2 class="section-heading">The three stages of a fuzzy match</h2>
         <p class="lede">
-          Inside the box marked <em>fuzzy match</em>, three explicit
-          stages run in order. The same worked example flows through all
-          three so you can see the data transform.
+          Zooming into Step 4 from the workflow above. Three explicit
+          stages run in order, every time. The same worked example flows
+          through all three so you can watch the data transform.
         </p>
 
-        <div class="diag diag-pipeline">
-          <div class="diag-io diag-io-input">
-            <div class="diag-io-label">You type</div>
-            <code class="diag-io-value">Jhon Smith</code>
-          </div>
+        <figure class="svg-figure">
+          <svg
+            class="svg-pipeline"
+            viewBox="0 0 720 720"
+            role="img"
+            aria-labelledby="pipeTitle pipeDesc"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <title id="pipeTitle">The three stages of a fuzzy match</title>
+            <desc id="pipeDesc">
+              Input flows through normalisation, comparison, and ranking
+              to produce the likely match.
+            </desc>
 
-          <div class="diag-connector">▼</div>
+            <defs>
+              <marker
+                id="arrow2"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" class="svg-arrowhead" />
+              </marker>
+            </defs>
 
-          <div class="diag-stage">
-            <div class="diag-stage-head">
-              <span class="diag-stage-num">N°1</span>
-              <span class="diag-stage-name">Normalisation</span>
-              <span class="diag-stage-alias">a.k.a. cleaning</span>
-            </div>
-            <p class="diag-stage-desc">Tidy the string into a standard form. Rule-based and deterministic — the same input always gives the same output.</p>
-            <div class="diag-stage-data">
-              <code>Jhon Smith</code>
-              <span class="diag-arrow">▶</span>
-              <code>jhon smith</code>
-            </div>
-          </div>
+            <!-- Input -->
+            <g class="svg-io svg-io-input">
+              <rect x="200" y="20" width="320" height="55" rx="3" />
+              <text x="360" y="42" class="svg-io-label" text-anchor="middle">YOU TYPE</text>
+              <text x="360" y="64" class="svg-io-value" text-anchor="middle">Jhon Smith</text>
+            </g>
 
-          <div class="diag-connector">▼</div>
+            <line x1="360" y1="75" x2="360" y2="110" class="svg-line" marker-end="url(#arrow2)" />
 
-          <div class="diag-stage">
-            <div class="diag-stage-head">
-              <span class="diag-stage-num">N°2</span>
-              <span class="diag-stage-name">Comparison</span>
-              <span class="diag-stage-alias">a.k.a. similarity scoring</span>
-            </div>
-            <p class="diag-stage-desc">Compare your cleaned string to every cleaned candidate in the reference list. Each comparison returns a number between 0 (nothing alike) and 1 (identical).</p>
-            <div class="diag-stage-data diag-stage-data-rows">
-              <div><code>jhon smith</code> <span class="diag-vs">vs</span> <code>john smith</code> <span class="diag-arrow">▶</span> <span class="diag-score">0.94</span></div>
-              <div><code>jhon smith</code> <span class="diag-vs">vs</span> <code>jon smyth</code> <span class="diag-arrow">▶</span> <span class="diag-score">0.84</span></div>
-              <div><code>jhon smith</code> <span class="diag-vs">vs</span> <code>wei chen</code> <span class="diag-arrow">▶</span> <span class="diag-score">0.18</span></div>
-              <div class="diag-stage-data-more">… 22 candidates in total</div>
-            </div>
-          </div>
+            <!-- Stage 1: Normalisation -->
+            <g class="svg-stage">
+              <rect x="60" y="110" width="600" height="120" rx="3" />
+              <text x="80" y="138" class="svg-stage-num">Stage 1</text>
+              <text x="80" y="162" class="svg-stage-title">Normalisation</text>
+              <text x="220" y="162" class="svg-stage-alias">a.k.a. cleaning</text>
+              <text x="80" y="186" class="svg-stage-desc">Tidy the string into a standard form. Rule-based and deterministic —</text>
+              <text x="80" y="202" class="svg-stage-desc">the same input always gives the same output.</text>
+              <g transform="translate(80, 220)">
+                <text x="0" y="0" class="svg-mono">Jhon Smith</text>
+                <text x="140" y="0" class="svg-arrow-glyph">▶</text>
+                <text x="190" y="0" class="svg-mono">jhon smith</text>
+              </g>
+            </g>
 
-          <div class="diag-connector">▼</div>
+            <line x1="360" y1="230" x2="360" y2="265" class="svg-line" marker-end="url(#arrow2)" />
 
-          <div class="diag-stage">
-            <div class="diag-stage-head">
-              <span class="diag-stage-num">N°3</span>
-              <span class="diag-stage-name">Ranking</span>
-              <span class="diag-stage-alias">a.k.a. picking the winner</span>
-            </div>
-            <p class="diag-stage-desc">Sort candidates by score, highest first. The top one is the likely match.</p>
-            <div class="diag-stage-data diag-stage-data-rows">
-              <div class="diag-rank-row diag-rank-winner">
-                <span class="diag-rank">N°1</span>
-                <span class="diag-rank-name">John Smith</span>
-                <span class="diag-score">0.94</span>
-                <span class="diag-rank-tag">likely match</span>
-              </div>
-              <div class="diag-rank-row">
-                <span class="diag-rank">N°2</span>
-                <span class="diag-rank-name">Jon Smyth</span>
-                <span class="diag-score">0.84</span>
-              </div>
-              <div class="diag-stage-data-more">…</div>
-            </div>
-          </div>
+            <!-- Stage 2: Comparison -->
+            <g class="svg-stage">
+              <rect x="60" y="265" width="600" height="195" rx="3" />
+              <text x="80" y="293" class="svg-stage-num">Stage 2</text>
+              <text x="80" y="317" class="svg-stage-title">Comparison</text>
+              <text x="200" y="317" class="svg-stage-alias">a.k.a. similarity scoring</text>
+              <text x="80" y="341" class="svg-stage-desc">Compare your cleaned string to every cleaned candidate.</text>
+              <text x="80" y="357" class="svg-stage-desc">Each comparison returns a number from 0 to 1.</text>
+              <g transform="translate(80, 385)">
+                <text x="0" y="0" class="svg-mono">jhon smith</text>
+                <text x="140" y="0" class="svg-vs">vs</text>
+                <text x="190" y="0" class="svg-mono">john smith</text>
+                <text x="380" y="0" class="svg-arrow-glyph">▶</text>
+                <text x="420" y="0" class="svg-score">0.94</text>
+              </g>
+              <g transform="translate(80, 405)">
+                <text x="0" y="0" class="svg-mono">jhon smith</text>
+                <text x="140" y="0" class="svg-vs">vs</text>
+                <text x="190" y="0" class="svg-mono">jon smyth</text>
+                <text x="380" y="0" class="svg-arrow-glyph">▶</text>
+                <text x="420" y="0" class="svg-score">0.84</text>
+              </g>
+              <g transform="translate(80, 425)">
+                <text x="0" y="0" class="svg-mono">jhon smith</text>
+                <text x="140" y="0" class="svg-vs">vs</text>
+                <text x="190" y="0" class="svg-mono">wei chen</text>
+                <text x="380" y="0" class="svg-arrow-glyph">▶</text>
+                <text x="420" y="0" class="svg-score">0.18</text>
+              </g>
+              <text x="640" y="450" class="svg-stage-desc" text-anchor="end">…22 candidates total</text>
+            </g>
 
-          <div class="diag-connector">▼</div>
+            <line x1="360" y1="460" x2="360" y2="495" class="svg-line" marker-end="url(#arrow2)" />
 
-          <div class="diag-io diag-io-output">
-            <div class="diag-io-label">The likely match</div>
-            <code class="diag-io-value">John Smith</code>
-          </div>
-        </div>
+            <!-- Stage 3: Ranking -->
+            <g class="svg-stage">
+              <rect x="60" y="495" width="600" height="120" rx="3" />
+              <text x="80" y="523" class="svg-stage-num">Stage 3</text>
+              <text x="80" y="547" class="svg-stage-title">Ranking</text>
+              <text x="160" y="547" class="svg-stage-alias">a.k.a. picking the winner</text>
+              <text x="80" y="571" class="svg-stage-desc">Sort candidates by score, highest first. The top one is the</text>
+              <text x="80" y="587" class="svg-stage-desc">likely match.</text>
+              <g transform="translate(80, 605)">
+                <text x="0" y="0" class="svg-rank-marker">N°1</text>
+                <text x="190" y="0" class="svg-mono">John Smith</text>
+                <text x="420" y="0" class="svg-score">0.94</text>
+                <text x="490" y="0" class="svg-rank-tag">likely match</text>
+              </g>
+            </g>
+
+            <line x1="360" y1="615" x2="360" y2="650" class="svg-line" marker-end="url(#arrow2)" />
+
+            <!-- Output -->
+            <g class="svg-io svg-io-output">
+              <rect x="200" y="650" width="320" height="55" rx="3" />
+              <text x="360" y="672" class="svg-io-label" text-anchor="middle">THE LIKELY MATCH</text>
+              <text x="360" y="694" class="svg-io-value" text-anchor="middle">John Smith</text>
+            </g>
+          </svg>
+          <figcaption class="svg-caption">
+            What runs every time fuzzy match (Step 4) is invoked.
+          </figcaption>
+        </figure>
 
         <p class="aside">
-          The <a href="index.html">tool</a> shows this pipeline in
-          action — type a messy entry and watch each stage play out.
-          The <a href="methods.html">algorithms page</a> covers what
-          happens inside Stage 2: the four comparison techniques and
-          when each one earns its keep.
+          The <a href="index.html">tool</a> shows this pipeline in action
+          — type a messy entry and watch each stage play out. The
+          <a href="methods.html">algorithms page</a> covers what happens
+          inside Stage 2: the four comparison techniques and when each
+          one earns its keep.
         </p>
       </section>
     </main>
