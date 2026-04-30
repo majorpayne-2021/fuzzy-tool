@@ -10,10 +10,11 @@
 // methods, so the reader can compare at a glance before diving into
 // the per-method visual detail.
 
-import { steps as normSteps, runPipeline, normalize } from './normalization.js';
+import { steps, runPipeline, normalize } from './normalization.js';
 import { METHODS } from './methods.js';
 import { SCENARIOS, getScenario } from './scenarios.js';
 import { renderVisualization } from './visualize.js';
+import { renderCalculation } from './calculations.js';
 
 const state = {
   scenarioId: SCENARIOS[0].id,
@@ -83,7 +84,7 @@ function renderNormTrail() {
       const explain =
         i === 0
           ? 'Raw input.'
-          : (normSteps.find((s) => s.id === stage.id)?.explain || '');
+          : (steps.find((s) => s.id === stage.id)?.explain || '');
       return `
         <div class="trail-row ${i === 0 ? 'is-raw' : ''}">
           <span class="trail-stage">${escapeHtml(stage.label)}</span>
@@ -147,11 +148,11 @@ function renderScoreSummary(perMethod, bestId) {
 // ─── Top candidate — full breakdown, always expanded ─────────────────────
 function renderTopCandidates(candidates) {
   topEl.innerHTML = candidates.length
-    ? renderCandidateCard(candidates[0], 1)
+    ? renderCandidateCard(candidates[0], 1, { showCalc: true })
     : '<p class="empty-note">No candidates to compare.</p>';
 }
 
-function renderMethodSections(perMethod, normA, normB, bestId) {
+function renderMethodSections(perMethod, normA, normB, bestId, { showCalc = false } = {}) {
   return perMethod
     .map((pm) => {
       const viz = renderVisualization(pm.methodId, normA, normB, pm.result, {
@@ -160,6 +161,9 @@ function renderMethodSections(perMethod, normA, normB, bestId) {
       });
       const scoreCls = scoreClass(pm.result.score);
       const isBest = pm.methodId === bestId;
+      const calc = showCalc
+        ? `<details class="method-calc-toggle"><summary>Show calculation</summary>${renderCalculation(pm.methodId, normA, normB, pm.result)}</details>`
+        : '';
       return `
         <div class="method-section ${isBest ? 'method-section-best' : ''}">
           <div class="method-section-head">
@@ -169,13 +173,14 @@ function renderMethodSections(perMethod, normA, normB, bestId) {
           </div>
           <p class="method-section-expl">${escapeHtml(pm.result.explanation)}</p>
           ${viz}
+          ${calc}
         </div>
       `;
     })
     .join('');
 }
 
-function renderCandidateCard(cand, rank) {
+function renderCandidateCard(cand, rank, { showCalc = false } = {}) {
   const { raw, normA, normB, perMethod, best } = cand;
   return `
     <article class="candidate-card">
@@ -187,7 +192,7 @@ function renderCandidateCard(cand, rank) {
         </div>
       </header>
       ${renderScoreSummary(perMethod, best.methodId)}
-      <div class="candidate-methods">${renderMethodSections(perMethod, normA, normB, best.methodId)}</div>
+      <div class="candidate-methods">${renderMethodSections(perMethod, normA, normB, best.methodId, { showCalc })}</div>
     </article>
   `;
 }
@@ -218,7 +223,7 @@ function renderAccordionRow(cand, rank) {
       <div class="candidate-row-body">
         <div class="candidate-row-norm">normalised: <code>${escapeHtml(normB)}</code></div>
         ${renderScoreSummary(perMethod, best.methodId)}
-        <div class="candidate-methods">${renderMethodSections(perMethod, normA, normB, best.methodId)}</div>
+        <div class="candidate-methods">${renderMethodSections(perMethod, normA, normB, best.methodId, { showCalc: true })}</div>
       </div>
     </details>
   `;

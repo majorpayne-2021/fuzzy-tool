@@ -859,6 +859,92 @@ footer .footer-links a { margin: 0 0.25rem; }
   color: var(--text);
   border-left: 2px solid var(--rule);
 }
+.method-card-page .method-worked-pair {
+  font-size: 0.92rem;
+  color: var(--text-soft);
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+.method-card-page .method-viz {
+  background: var(--bg-warmer);
+  padding: 1rem 1.25rem;
+  border-radius: 2px;
+  border-left: 2px solid var(--rule);
+}
+.method-calc {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed var(--rule);
+}
+.method-calc-label {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+.method-calc-where {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 0.85rem;
+  margin: 0 0 0.85rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.method-calc-where dt {
+  font-family: var(--mono);
+  color: var(--text);
+  font-weight: 500;
+}
+.method-calc-where dd {
+  margin: 0;
+  color: var(--text-soft);
+}
+.method-calc-block {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--text);
+  margin: 0 0 0.5rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+.method-calc-block:last-child { margin-bottom: 0; }
+
+/* Try-it page: opt-in calculation toggle inside each method section */
+.method-calc-toggle {
+  margin-top: 0.85rem;
+  border-top: 1px dashed var(--rule);
+  padding-top: 0.6rem;
+}
+.method-calc-toggle > summary {
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.15rem 0;
+  user-select: none;
+}
+.method-calc-toggle > summary::-webkit-details-marker { display: none; }
+.method-calc-toggle > summary::before {
+  content: '▸ ';
+  display: inline-block;
+  margin-right: 0.35rem;
+  transition: transform 0.15s;
+}
+.method-calc-toggle[open] > summary::before { transform: rotate(90deg); }
+.method-calc-toggle > summary:hover { color: var(--accent); }
+/* The shared .method-calc already provides its own top border + spacing,
+   so suppress the duplicate when nested inside the toggle. */
+.method-calc-toggle .method-calc {
+  margin-top: 0.5rem;
+  padding-top: 0;
+  border-top: none;
+}
 .method-card-page code {
   background: var(--bg-warmer);
   padding: 0.1rem 0.35rem;

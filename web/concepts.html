@@ -46,15 +46,15 @@
           <span class="toc-label">In this chapter</span>
           <ol class="toc-list">
             <li>
-              <a href="#checklist" class="toc-link">
+              <a href="#workflow" class="toc-link">
                 <span class="toc-num">N°1</span>
-                Before you start — the analyst's checklist
+                Where it sits — the five-step workflow
               </a>
             </li>
             <li>
-              <a href="#workflow" class="toc-link">
+              <a href="#checklist" class="toc-link">
                 <span class="toc-num">N°2</span>
-                The five-step workflow
+                Before you start — the analyst's checklist
               </a>
             </li>
             <li>
@@ -67,81 +67,10 @@
         </nav>
       </section>
 
-      <!-- Analyst's checklist -->
-      <section class="section" id="checklist">
-        <div class="eyebrow-row">
-          <span class="numeral">N°1</span>
-          <span class="eyebrow">Before you start</span>
-        </div>
-        <h2 class="section-heading">The analyst's checklist</h2>
-        <p class="lede">
-          Six things you want lined up before you run the pipeline.
-          Skipping any of them tends to show up later as a confusing
-          result or a meeting about whether a match is "really" a match.
-        </p>
-
-        <div class="table-wrap">
-          <table class="ref-table">
-            <thead>
-              <tr>
-                <th class="num-col">#</th>
-                <th>What you need</th>
-                <th>Why</th>
-                <th>Example</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="num-col">1</td>
-                <td><strong>Input strings</strong></td>
-                <td>The messy data you want to match. Can be one entry, a spreadsheet column, or a stream.</td>
-                <td><code>Jhon Smith</code>, <code>10 smith st</code></td>
-              </tr>
-              <tr>
-                <td class="num-col">2</td>
-                <td><strong>Reference list</strong></td>
-                <td>The canonical, authoritative values you're matching <em>against</em>. Without this, there's nothing to match to.</td>
-                <td>A customer master list, postcode register, product catalogue</td>
-              </tr>
-              <tr>
-                <td class="num-col">3</td>
-                <td><strong>Knowledge of the noise</strong></td>
-                <td>What kinds of errors do you actually expect? Drives which algorithm earns its keep.</td>
-                <td>Typos? Reordered words? Abbreviations? Phonetic variants?</td>
-              </tr>
-              <tr>
-                <td class="num-col">4</td>
-                <td><strong>Normalisation rules</strong></td>
-                <td>Cleanups applied before any scoring. Must be identical on both sides — input and reference.</td>
-                <td>Lowercase, strip punctuation, remove accents, expand <code>St</code>→<code>Street</code></td>
-              </tr>
-              <tr>
-                <td class="num-col">5</td>
-                <td><strong>Confidence thresholds</strong></td>
-                <td>Cutoffs for auto-match, human review, and unmatched. A <em>business</em> decision, not a technical one. <span class="ref-note">Only needed when fuzzy match runs — exact match is unambiguous and doesn't use a threshold.</span></td>
-                <td>≥0.90 auto · 0.70–0.90 review · &lt;0.70 unmatched</td>
-              </tr>
-              <tr>
-                <td class="num-col">6</td>
-                <td><strong>A review process</strong></td>
-                <td>Where flagged matches go, who looks at them, how fast, and where the final answer is recorded.</td>
-                <td>Queue in a sheet → reviewed daily → outcome written back to source</td>
-              </tr>
-              <tr>
-                <td class="num-col">7</td>
-                <td><strong>A candidate-generation strategy</strong></td>
-                <td>Only matters if the reference list is large. You can't realistically score one input against a million records — you need a way to shortlist first. <span class="ref-note">See the note below the workflow.</span></td>
-                <td>Block by surname initial, postcode prefix, or trigram index</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
       <!-- Combined flowchart -->
       <section class="section" id="workflow">
         <div class="eyebrow-row">
-          <span class="numeral">N°2</span>
+          <span class="numeral">N°1</span>
           <span class="eyebrow">Where it sits & when it runs</span>
         </div>
         <h2 class="section-heading">The five-step workflow</h2>
@@ -393,6 +322,77 @@
             <code>splink</code> — they handle blocking and scoring as one
             pipeline.
           </p>
+        </div>
+      </section>
+
+      <!-- Analyst's checklist -->
+      <section class="section" id="checklist">
+        <div class="eyebrow-row">
+          <span class="numeral">N°2</span>
+          <span class="eyebrow">Before you start</span>
+        </div>
+        <h2 class="section-heading">The analyst's checklist</h2>
+        <p class="lede">
+          Six things you want lined up before you run the pipeline.
+          Skipping any of them tends to show up later as a confusing
+          result or a meeting about whether a match is "really" a match.
+        </p>
+
+        <div class="table-wrap">
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th class="num-col">#</th>
+                <th>What you need</th>
+                <th>Why</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="num-col">1</td>
+                <td><strong>Input strings</strong></td>
+                <td>The messy data you want to match. Can be one entry, a spreadsheet column, or a stream.</td>
+                <td><code>Jhon Smith</code>, <code>10 smith st</code></td>
+              </tr>
+              <tr>
+                <td class="num-col">2</td>
+                <td><strong>Reference list</strong></td>
+                <td>The canonical, authoritative values you're matching <em>against</em>. Without this, there's nothing to match to.</td>
+                <td>A customer master list, postcode register, product catalogue</td>
+              </tr>
+              <tr>
+                <td class="num-col">3</td>
+                <td><strong>Knowledge of the noise</strong></td>
+                <td>What kinds of errors do you actually expect? Drives which algorithm earns its keep.</td>
+                <td>Typos? Reordered words? Abbreviations? Phonetic variants?</td>
+              </tr>
+              <tr>
+                <td class="num-col">4</td>
+                <td><strong>Normalisation rules</strong></td>
+                <td>Cleanups applied before any scoring. Must be identical on both sides — input and reference.</td>
+                <td>Lowercase, strip punctuation, remove accents, expand <code>St</code>→<code>Street</code></td>
+              </tr>
+              <tr>
+                <td class="num-col">5</td>
+                <td><strong>Confidence thresholds</strong></td>
+                <td>Cutoffs for auto-match, human review, and unmatched. A <em>business</em> decision, not a technical one. <span class="ref-note">Only needed when fuzzy match runs — exact match is unambiguous and doesn't use a threshold.</span></td>
+                <td>≥0.90 auto · 0.70–0.90 review · &lt;0.70 unmatched</td>
+              </tr>
+              <tr>
+                <td class="num-col">6</td>
+                <td><strong>A review process</strong></td>
+                <td>Where flagged matches go, who looks at them, how fast, and where the final answer is recorded.</td>
+                <td>Queue in a sheet → reviewed daily → outcome written back to source</td>
+              </tr>
+              <tr>
+                <td class="num-col">7</td>
+                <td><strong>A candidate-generation strategy</strong></td>
+                <td>Only matters if the reference list is large. You can't realistically score one input against a million records — you need a way to shortlist first. <span class="ref-note">See the candidate-generation note in the workflow above.</span></td>
+                <td>Block by surname initial, postcode prefix, or trigram index</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 

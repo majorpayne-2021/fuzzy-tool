@@ -45,10 +45,40 @@
           <a href="concepts.html">concepts page</a>. They assume the
           strings have already been normalised.
         </p>
+
+        <nav class="toc" aria-label="On this page">
+          <span class="toc-label">In this chapter</span>
+          <ol class="toc-list">
+            <li>
+              <a href="#levenshtein" class="toc-link">
+                <span class="toc-num">N°1</span>
+                Levenshtein
+              </a>
+            </li>
+            <li>
+              <a href="#jaro-winkler" class="toc-link">
+                <span class="toc-num">N°2</span>
+                Jaro-Winkler
+              </a>
+            </li>
+            <li>
+              <a href="#jaccard-tokens" class="toc-link">
+                <span class="toc-num">N°3</span>
+                Jaccard similarity (tokens)
+              </a>
+            </li>
+            <li>
+              <a href="#jaccard-ngrams" class="toc-link">
+                <span class="toc-num">N°4</span>
+                Jaccard similarity (n-grams)
+              </a>
+            </li>
+          </ol>
+        </nav>
       </section>
 
       <!-- Levenshtein -->
-      <article class="method-card-page">
+      <article class="method-card-page" id="levenshtein">
         <div class="eyebrow-row">
           <span class="numeral">N°1</span>
           <span class="eyebrow">Method</span>
@@ -72,13 +102,11 @@
 
         <div class="method-block">
           <div class="method-block-label">Worked example</div>
-          <div class="method-worked">
-            "kitten" → "sitting" requires 3 edits:<br />
-            1. k → s (substitution)<br />
-            2. e → i (substitution)<br />
-            3. insert g at the end<br />
-            Distance 3, length 7 → similarity ≈ 0.57.
+          <div class="method-worked-pair">
+            <code>kitten</code> vs <code>sitting</code> — substitutions in
+            orange, the trailing insert in blue.
           </div>
+          <div class="method-viz" data-method="levenshtein" data-a="kitten" data-b="sitting"></div>
         </div>
 
         <div class="method-block">
@@ -111,7 +139,7 @@
       </article>
 
       <!-- Jaro-Winkler -->
-      <article class="method-card-page">
+      <article class="method-card-page" id="jaro-winkler">
         <div class="eyebrow-row">
           <span class="numeral">N°2</span>
           <span class="eyebrow">Method</span>
@@ -136,11 +164,12 @@
 
         <div class="method-block">
           <div class="method-block-label">Worked example</div>
-          <div class="method-worked">
-            "John" vs "Jon" — matching characters within a small window, 0
-            transpositions, shared prefix of 3 ("Jon"). Base Jaro ≈ 0.92,
-            plus the prefix bonus → final ≈ 0.94.
+          <div class="method-worked-pair">
+            <code>jonathan</code> vs <code>jonathon</code> — matched
+            characters in green, the shared prefix underlined for the
+            Winkler bonus.
           </div>
+          <div class="method-viz" data-method="jaro_winkler" data-a="jonathan" data-b="jonathon"></div>
         </div>
 
         <div class="method-block">
@@ -171,7 +200,7 @@
       </article>
 
       <!-- Jaccard tokens -->
-      <article class="method-card-page">
+      <article class="method-card-page" id="jaccard-tokens">
         <div class="eyebrow-row">
           <span class="numeral">N°3</span>
           <span class="eyebrow">Method</span>
@@ -196,11 +225,12 @@
 
         <div class="method-block">
           <div class="method-block-label">Worked example</div>
-          <div class="method-worked">
-            "red blue green" vs "green red yellow"<br />
-            Shared: {red, green}. Total unique: {red, blue, green, yellow}.<br />
-            Jaccard = 2 / 4 = 0.50.
+          <div class="method-worked-pair">
+            <code>red blue green</code> vs <code>green red yellow</code> —
+            shared words on the left, words unique to each string on the
+            right.
           </div>
+          <div class="method-viz" data-method="jaccard_tokens" data-a="red blue green" data-b="green red yellow"></div>
         </div>
 
         <div class="method-block">
@@ -231,7 +261,7 @@
       </article>
 
       <!-- Jaccard n-grams -->
-      <article class="method-card-page">
+      <article class="method-card-page" id="jaccard-ngrams">
         <div class="eyebrow-row">
           <span class="numeral">N°4</span>
           <span class="eyebrow">Method</span>
@@ -256,11 +286,11 @@
 
         <div class="method-block">
           <div class="method-block-label">Worked example</div>
-          <div class="method-worked">
-            "hello" bigrams: {he, el, ll, lo}<br />
-            "hallo" bigrams: {ha, al, ll, lo}<br />
-            Shared: {ll, lo}. Total unique: 6. Jaccard = 2 / 6 ≈ 0.33.
+          <div class="method-worked-pair">
+            <code>hello</code> vs <code>hallo</code> with 2-grams. The
+            shared character pairs are the overlap that drives the score.
           </div>
+          <div class="method-viz" data-method="jaccard_ngrams" data-a="hello" data-b="hallo"></div>
         </div>
 
         <div class="method-block">
@@ -319,5 +349,7 @@
         <a href="https://www.linkedin.com/in/jenniferapayne25/" target="_blank" rel="noopener">LinkedIn</a>
       </p>
     </footer>
+
+    <script type="module" src="methods-page.js"></script>
   </body>
 </html>
