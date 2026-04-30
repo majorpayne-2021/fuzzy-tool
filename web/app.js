@@ -15,6 +15,7 @@ import { METHODS } from './methods.js';
 import { SCENARIOS, getScenario } from './scenarios.js';
 import { renderVisualization } from './visualize.js';
 import { renderCalculation } from './calculations.js';
+import { escapeHtml } from './util.js';
 
 const state = {
   scenarioId: SCENARIOS[0].id,
@@ -38,14 +39,6 @@ const verdictEl = $('verdict');
 // ─── Helpers ─────────────────────────────────────────────────────────────
 const fmt = (n) => n.toFixed(3);
 const scoreClass = (s) => (s >= 0.85 ? 'score-high' : s < 0.5 ? 'score-low' : '');
-
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
 
 // ─── Scenario tabs ───────────────────────────────────────────────────────
 function renderTabs() {

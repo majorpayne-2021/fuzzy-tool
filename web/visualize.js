@@ -5,13 +5,7 @@
 // characters aligned, which tokens overlapped, and which phonetic code
 // was produced — that's what makes the method click for a reader.
 
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+import { escapeHtml } from './util.js';
 
 // ─── Levenshtein: character alignment ────────────────────────────────────
 // Walks the edit script and renders two stacked rows, with each pair of

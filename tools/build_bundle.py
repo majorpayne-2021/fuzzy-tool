@@ -68,15 +68,55 @@ def strip_module_syntax(js: str) -> str:
     return js
 
 
+# Top-level declarations the collision check should pick up. We only look at
+# *line-leading* declarations so we don't false-positive on inner-scope vars.
+TOP_LEVEL_DECL_RE = re.compile(
+    r"^(?:const|let|var|function)\s+([A-Za-z_$][\w$]*)",
+    re.MULTILINE,
+)
+
+
+def assert_no_top_level_collisions(chunks: dict[str, str]) -> None:
+    """Fail the build if two source files declare the same top-level name.
+
+    ES modules are file-scoped, but the bundle concatenates everything into
+    one inline <script>, so top-level names become globals. `const`/`let`
+    collisions are syntax errors (Node would catch them); silent killers
+    are duplicate `function` declarations — they're hoisted, so the later
+    one wins and any earlier code calling that name suddenly invokes the
+    wrong function. (We hit this twice: `fmt` and `renderAll`.)
+
+    Failing here means future collisions surface at build time, not as a
+    section that mysteriously stopped rendering.
+    """
+    seen: dict[str, str] = {}
+    collisions: list[str] = []
+    for filename, src in chunks.items():
+        for name in TOP_LEVEL_DECL_RE.findall(src):
+            if name in seen and seen[name] != filename:
+                collisions.append(f"  {name!r}: declared in both {seen[name]} and {filename}")
+            else:
+                seen[name] = filename
+    if collisions:
+        raise ValueError(
+            "Top-level name collisions across bundled files (these would "
+            "silently overwrite each other in the single-script bundle). "
+            "Rename one, or extract the shared piece into a util module:\n"
+            + "\n".join(collisions)
+        )
+
+
 def main() -> None:
     css = (WEB / "style.css").read_text()
 
     # Order matters: leaf modules first, then anything that depends on them.
-    # `calculations.js` is consumed by both `app.js` and `methods-page.js`,
-    # so it sits before them. `methods-page.js` runs its renderAll() at
-    # module-load time, which queries the DOM — fine because the bundle
-    # script is at the end of <body> and all three page divs are present.
+    # `util.js` is the lowest-level shared module (nothing imports from
+    # higher modules), `calculations.js` is consumed by both `app.js` and
+    # `methods-page.js`, and `methods-page.js` runs its render entry at
+    # module-load time — fine because the bundle script is at the end of
+    # <body> and all three page divs are in the DOM by then.
     js_files = [
+        "util.js",
         "normalization.js",
         "methods.js",
         "scenarios.js",
@@ -85,11 +125,16 @@ def main() -> None:
         "app.js",
         "methods-page.js",
     ]
-    js_chunks = []
+    chunks_by_file: dict[str, str] = {}
     for name in js_files:
         src = (WEB / name).read_text()
-        js_chunks.append(f"// ─── {name} ───\n" + strip_module_syntax(src))
-    bundled_js = "\n\n".join(js_chunks)
+        chunks_by_file[name] = strip_module_syntax(src)
+
+    assert_no_top_level_collisions(chunks_by_file)
+
+    bundled_js = "\n\n".join(
+        f"// ─── {name} ───\n" + chunks_by_file[name] for name in js_files
+    )
 
     try_body = extract_body_section((WEB / "index.html").read_text())
     concepts_body = extract_body_section((WEB / "concepts.html").read_text())

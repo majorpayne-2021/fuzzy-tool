@@ -5,6 +5,8 @@
 // `where` is an optional definitions list for any named quantities the
 // formula references.
 
+import { escapeHtml } from './util.js';
+
 const fmtScore = (n) => n.toFixed(3);
 
 const CALCULATIONS = {
@@ -64,10 +66,6 @@ const CALCULATIONS = {
     };
   },
 };
-
-function escapeHtml(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
 
 export function renderCalculation(methodId, a, b, result) {
   const builder = CALCULATIONS[methodId];
