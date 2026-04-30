@@ -427,10 +427,6 @@ header .tagline em { font-style: normal; color: var(--accent-deep); }
 .candidate-card:first-of-type { margin-top: 1rem; }
 
 .candidate-head {
-  display: grid;
-  grid-template-columns: 4rem 1fr;
-  gap: 1.25rem;
-  align-items: baseline;
   margin-bottom: 1rem;
 }
 
