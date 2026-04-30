@@ -39,6 +39,12 @@ const verdictEl = $('verdict');
 // ─── Helpers ─────────────────────────────────────────────────────────────
 const fmt = (n) => n.toFixed(3);
 const scoreClass = (s) => (s >= 0.85 ? 'score-high' : s < 0.5 ? 'score-low' : '');
+const ordinal = (n) => {
+  const tens = n % 100;
+  if (tens >= 11 && tens <= 13) return `${n}th`;
+  const suffix = { 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th';
+  return `${n}${suffix}`;
+};
 
 // ─── Scenario tabs ───────────────────────────────────────────────────────
 function renderTabs() {
@@ -141,7 +147,7 @@ function renderScoreSummary(perMethod, bestId) {
 // ─── Top candidate — full breakdown, always expanded ─────────────────────
 function renderTopCandidates(candidates) {
   topEl.innerHTML = candidates.length
-    ? renderCandidateCard(candidates[0], 1, { showCalc: true })
+    ? renderCandidateCard(candidates[0], { showCalc: true })
     : '<p class="empty-note">No candidates to compare.</p>';
 }
 
@@ -173,12 +179,11 @@ function renderMethodSections(perMethod, normA, normB, bestId, { showCalc = fals
     .join('');
 }
 
-function renderCandidateCard(cand, rank, { showCalc = false } = {}) {
+function renderCandidateCard(cand, { showCalc = false } = {}) {
   const { raw, normA, normB, perMethod, best } = cand;
   return `
     <article class="candidate-card">
       <header class="candidate-head">
-        <span class="candidate-rank">N°${rank}</span>
         <div class="candidate-names">
           <span class="candidate-name">${escapeHtml(raw)}</span>
           <span class="candidate-norm">normalised: <code>${escapeHtml(normB)}</code></span>
@@ -207,7 +212,7 @@ function renderAccordionRow(cand, rank) {
   return `
     <details class="candidate-row">
       <summary class="candidate-row-summary">
-        <span class="candidate-row-rank">N°${rank}</span>
+        <span class="candidate-row-rank">${ordinal(rank)}</span>
         <span class="candidate-row-name">${escapeHtml(raw)}</span>
         <span class="candidate-row-method">${escapeHtml(best.methodLabel)}</span>
         <span class="candidate-row-score ${scoreClass(best.result.score)}">${fmt(best.result.score)}</span>

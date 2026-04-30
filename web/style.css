@@ -434,14 +434,6 @@ header .tagline em { font-style: normal; color: var(--accent-deep); }
   margin-bottom: 1rem;
 }
 
-.candidate-rank {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 1.5rem;
-  color: var(--accent);
-  line-height: 1;
-}
-
 .candidate-names { display: flex; flex-direction: column; gap: 0.25rem; }
 .candidate-name {
   font-family: var(--serif);
