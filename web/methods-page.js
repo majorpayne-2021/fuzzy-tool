@@ -10,7 +10,7 @@ import { METHODS } from './methods.js';
 import { renderVisualization } from './visualize.js';
 import { renderCalculation } from './calculations.js';
 
-function renderAll() {
+function renderMethodCards() {
   const byId = Object.fromEntries(METHODS.map((m) => [m.id, m]));
   for (const el of document.querySelectorAll('.method-viz')) {
     const method = byId[el.dataset.method];
@@ -32,7 +32,7 @@ function renderAll() {
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', renderAll);
+  document.addEventListener('DOMContentLoaded', renderMethodCards);
 } else {
-  renderAll();
+  renderMethodCards();
 }
