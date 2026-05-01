@@ -424,10 +424,16 @@ header .tagline em { font-style: normal; color: var(--accent-deep); }
   border-top: 1px solid var(--rule);
   padding-top: 1.5rem;
 }
-.candidate-card:first-of-type { margin-top: 1rem; }
+/* Top card sits directly under the section lede — drop the rule line and
+   heavy spacing; the "Best match" eyebrow already anchors it visually. */
+.candidate-card-top {
+  margin-top: 0;
+  border-top: none;
+  padding-top: 0;
+}
 
 .candidate-head {
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .candidate-names { display: flex; flex-direction: column; gap: 0.25rem; }

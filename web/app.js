@@ -182,8 +182,9 @@ function renderMethodSections(perMethod, normA, normB, bestId, { showCalc = fals
 function renderCandidateCard(cand, { showCalc = false } = {}) {
   const { raw, normA, normB, perMethod, best } = cand;
   return `
-    <article class="candidate-card">
+    <article class="candidate-card candidate-card-top">
       <header class="candidate-head">
+        <div class="eyebrow-row"><span class="eyebrow">Best match</span></div>
         <div class="candidate-names">
           <span class="candidate-name">${escapeHtml(raw)}</span>
           <span class="candidate-norm">normalised: <code>${escapeHtml(normB)}</code></span>
