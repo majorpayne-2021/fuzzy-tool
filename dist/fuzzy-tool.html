@@ -1,0 +1,3463 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>fuzzy-tool — Jennifer Payne</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+/* ─────────────────────────────────────────────────────────────────────────
+   Editorial aesthetic — cream canvas, sage accent, serif display type,
+   clean sans for body. Narrow content column, generous whitespace,
+   hairline rules instead of heavy borders.
+   ──────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* palette */
+  --bg: #faf8f3;
+  --bg-warmer: #f3efe5;
+  --surface: #ffffff;
+  --text: #2a2824;
+  --text-soft: #4a4740;
+  --muted: #8a8678;
+  --muted-soft: #b8b3a3;
+  --rule: #e7e2d5;
+  --rule-soft: #f0ebdc;
+
+  --accent: #5a6b50;            /* sage green */
+  --accent-deep: #3e4a38;
+  --accent-soft: #e8ede3;
+
+  --good: #4a6b4a;
+  --good-soft: #e8ede3;
+  --warn: #8a6a3d;
+  --warn-soft: #f3ebdd;
+  --info: #4a5f75;
+  --info-soft: #e7ecf2;
+
+  /* type */
+  --serif: "Fraunces", "Source Serif 4", Georgia, serif;
+  --serif-feat: "ss01" on, "ss02" on;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* spacing */
+  --content: 760px;
+  --content-wide: 960px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--text);
+  background: var(--bg);
+}
+
+a { color: var(--accent-deep); }
+a:hover { color: var(--accent); }
+
+code {
+  font-family: var(--mono);
+  font-size: 0.92em;
+}
+
+/* ─── Layout containers ─── */
+header,
+main,
+footer {
+  max-width: var(--content-wide);
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+header { padding-top: 4rem; padding-bottom: 2rem; }
+main { padding-bottom: 4rem; }
+footer { padding-top: 3rem; padding-bottom: 3rem; }
+
+@media (max-width: 720px) {
+  header, main, footer { padding-left: 1.25rem; padding-right: 1.25rem; }
+}
+
+/* ─── Header ─── */
+.page-nav {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  font-family: var(--sans);
+}
+
+.page-nav-link {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.page-nav-link:hover { color: var(--accent); }
+.page-nav-link.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+header h1 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(2.8rem, 6vw, 4rem);
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  margin: 0 0 1rem;
+  color: var(--text);
+}
+
+header .tagline {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  color: var(--text-soft);
+  margin: 0;
+}
+
+header .tagline em { font-style: normal; color: var(--accent-deep); }
+
+/* ─── Generic section ─── */
+.section {
+  padding: 2.5rem 0;
+  border-top: 1px solid var(--rule);
+}
+.section:first-of-type { border-top: none; padding-top: 1.5rem; }
+
+.section-heading {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 2rem;
+  margin: 0 0 1.5rem;
+  color: var(--text);
+}
+
+.subheading {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.4rem;
+  margin: 0.25rem 0 0.75rem;
+  color: var(--text);
+}
+
+.lede {
+  color: var(--text-soft);
+  font-size: 1rem;
+  margin: 0 0 1.5rem;
+}
+
+.eyebrow-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.eyebrow,
+.numeral {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.numeral {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  letter-spacing: 0;
+  color: var(--accent);
+  text-transform: none;
+}
+
+/* ─── Scenario tabs ─── */
+.scenario-tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--rule);
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.scenario-tab {
+  background: none;
+  border: none;
+  font: inherit;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.85rem 1.2rem;
+  cursor: pointer;
+  color: var(--muted);
+  border-bottom: 1px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.scenario-tab:hover { color: var(--text); }
+.scenario-tab.active {
+  color: var(--accent-deep);
+  border-bottom-color: var(--accent);
+  font-weight: 500;
+}
+
+/* ─── Intro section ─── */
+.section-intro { padding-top: 2rem; }
+
+.scenario-story {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text);
+  margin: 0 0 1.25rem;
+  max-width: 40rem;
+}
+
+.scenario-source,
+.scenario-noise {
+  font-size: 0.92rem;
+  color: var(--text-soft);
+  margin: 0 0 0.75rem;
+  max-width: 44rem;
+}
+.scenario-source strong,
+.scenario-noise strong {
+  color: var(--muted);
+  font-weight: 500;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-right: 0.35rem;
+}
+
+.main-input-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 2rem 0 1.5rem;
+  max-width: 36rem;
+}
+.main-input-label .eyebrow { display: block; }
+.main-input-label input {
+  font-family: var(--mono);
+  font-size: 1.15rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+.main-input-label input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* ─── Reference list (collapsed details) ─── */
+.reference-details {
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--rule-soft);
+  padding-top: 0.5rem;
+}
+.reference-details summary {
+  cursor: pointer;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.5rem 0;
+  list-style: none;
+}
+.reference-details summary::before {
+  content: "+ ";
+  color: var(--accent);
+}
+.reference-details[open] summary::before { content: "− "; }
+.reference-list {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  columns: 2;
+  column-gap: 2rem;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--text-soft);
+}
+.reference-list li {
+  break-inside: avoid;
+  padding: 0.2rem 0;
+  border-bottom: 1px dashed var(--rule-soft);
+}
+@media (max-width: 640px) { .reference-list { columns: 1; } }
+
+/* ─── Verdict section ─── */
+.section-verdict {
+  padding: 2.5rem 0;
+  border-top: 1px solid var(--rule);
+}
+
+.verdict-box {
+  background: var(--bg-warmer);
+  border-left: 3px solid var(--accent);
+  padding: 1.5rem 1.75rem;
+  border-radius: 2px;
+}
+
+.verdict-row {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 1rem;
+  padding: 0.4rem 0;
+  align-items: baseline;
+}
+.verdict-row .eyebrow { margin: 0; }
+.verdict-row code {
+  font-family: var(--mono);
+  background: var(--surface);
+  padding: 0.2rem 0.5rem;
+  border-radius: 2px;
+  font-size: 0.95rem;
+  border: 1px solid var(--rule-soft);
+}
+
+.verdict-match {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.6rem;
+  color: var(--accent-deep);
+  line-height: 1.2;
+}
+
+.verdict-why {
+  margin: 1rem 0 0;
+  padding: 0.6rem 0.9rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+  border-radius: 2px;
+}
+.verdict-high .verdict-why { background: var(--good-soft); color: var(--good); }
+.verdict-medium .verdict-why { background: var(--warn-soft); color: var(--warn); }
+.verdict-low .verdict-why { background: var(--warn-soft); color: var(--warn); }
+
+@media (max-width: 600px) {
+  .verdict-row { grid-template-columns: 1fr; gap: 0.25rem; }
+}
+
+/* ─── "How we got there" wrapper ─── */
+.working {
+  margin-top: 3.5rem;
+}
+
+.working-heading {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.3rem;
+  color: var(--muted);
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Normalization trail ─── */
+.trail-row, .trail-head {
+  display: grid;
+  grid-template-columns: 9rem 1fr 1.3fr;
+  gap: 1.25rem;
+  padding: 0.7rem 0;
+  align-items: baseline;
+  border-top: 1px solid var(--rule-soft);
+}
+.trail-head {
+  border-top: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.5rem 0;
+}
+.trail-row.is-raw .trail-stage { color: var(--accent); }
+.trail-stage {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--text);
+  font-weight: 500;
+}
+.trail-string {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--text);
+  word-break: break-word;
+}
+.trail-empty { color: var(--muted-soft); font-style: italic; }
+.trail-explain {
+  font-size: 0.88rem;
+  color: var(--text-soft);
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+@media (max-width: 720px) {
+  .trail-row, .trail-head { grid-template-columns: 7rem 1fr; }
+  .trail-row .trail-explain, .trail-head span:last-child { display: none; }
+}
+
+/* ─── Candidate cards ─── */
+.candidate-card {
+  margin-top: 2rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.5rem;
+}
+/* Top card sits directly under the section lede — drop the rule line and
+   heavy spacing; the "Best match" eyebrow already anchors it visually. */
+.candidate-card-top {
+  margin-top: 0;
+  border-top: none;
+  padding-top: 0;
+}
+
+.candidate-head {
+  margin-bottom: 0.75rem;
+}
+
+.candidate-names { display: flex; flex-direction: column; gap: 0.25rem; }
+.candidate-name {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.2;
+}
+.candidate-norm {
+  font-size: 0.78rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.candidate-norm code {
+  font-family: var(--mono);
+  padding: 0.1rem 0.35rem;
+  background: var(--bg-warmer);
+  border-radius: 2px;
+}
+
+/* ─── Score summary row (top of each card) ─── */
+.score-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--rule-soft);
+  border-bottom: 1px solid var(--rule-soft);
+  margin-bottom: 1.5rem;
+}
+.score-summary-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 2px;
+  position: relative;
+}
+.score-summary-cell.is-best {
+  background: var(--accent-soft);
+}
+.score-summary-cell.is-best::after {
+  content: "★";
+  position: absolute;
+  top: 0.3rem;
+  right: 0.5rem;
+  color: var(--accent);
+  font-size: 0.8rem;
+}
+.score-summary-method {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+}
+.score-summary-score {
+  font-family: var(--mono);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.score-summary-cell.score-high .score-summary-score { color: var(--good); }
+.score-summary-cell.score-low .score-summary-score { color: var(--warn); }
+
+@media (max-width: 720px) {
+  .score-summary { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ─── Per-method sections inside candidate card ─── */
+.candidate-methods { }
+
+.method-section {
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--rule-soft);
+}
+.method-section:first-child { border-top: none; padding-top: 0; }
+.method-section-best {
+  /* Subtle inset marker, not a filled box */
+  padding-left: 1rem;
+  border-left: 2px solid var(--accent);
+}
+
+.method-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+.method-section-name {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.method-section-family {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.method-section-score {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+}
+.score-high { color: var(--good); }
+.score-low { color: var(--warn); }
+
+.method-section-expl {
+  color: var(--text-soft);
+  font-size: 0.88rem;
+  margin: 0.35rem 0 0.75rem;
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+/* ─── Visualisations ─── */
+.viz { margin-top: 0.5rem; }
+.viz-summary {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin: 0.5rem 0 0;
+  font-family: var(--serif);
+  font-style: italic;
+}
+.viz-side-label {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 0.85rem;
+  min-width: 6rem;
+  display: inline-block;
+  font-weight: 500;
+}
+
+/* Levenshtein alignment */
+.lev-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  font-family: var(--mono);
+  padding: 0.75rem 0.75rem;
+  background: var(--bg-warmer);
+  border-radius: 2px;
+}
+.lev-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.15rem 0.15rem;
+  border-radius: 2px;
+  min-width: 1.25rem;
+}
+.lev-char { display: block; font-size: 0.92rem; line-height: 1.35; }
+.lev-match { color: var(--text); }
+.lev-sub { background: var(--warn-soft); color: var(--warn); font-weight: 600; }
+.lev-del, .lev-ins { background: var(--info-soft); color: var(--info); }
+
+/* Jaro-Winkler */
+.jw-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+.jw-string {
+  font-family: var(--mono);
+  font-size: 1rem;
+  background: var(--bg-warmer);
+  padding: 0.4rem 0.6rem;
+  border-radius: 2px;
+  letter-spacing: 1px;
+}
+.jw-ch { display: inline-block; padding: 0 1px; }
+.jw-matched { background: var(--good-soft); color: var(--good); border-radius: 2px; }
+.jw-prefix { border-bottom: 2px solid var(--accent); }
+
+/* Pills for Jaccard tokens */
+.pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+.pill-group-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 0.5rem;
+  font-weight: 500;
+}
+.pill {
+  display: inline-block;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  border: 1px solid transparent;
+}
+.pill-shared { background: var(--good-soft); color: var(--good); border-color: #c9d6c3; }
+.pill-unique-a { background: var(--warn-soft); color: var(--warn); border-color: #e6d6bd; }
+.pill-unique-b { background: var(--info-soft); color: var(--info); border-color: #cbd5e0; }
+.pill-none { color: var(--muted); font-style: italic; font-size: 0.82rem; }
+
+/* n-gram tiles */
+.ngram-summary {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-bottom: 0.5rem;
+  font-family: var(--serif);
+  font-style: italic;
+}
+.ngram-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+.ngram-tile {
+  display: inline-block;
+  padding: 0.12rem 0.4rem;
+  background: var(--good-soft);
+  color: var(--good);
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  border: 1px solid #c9d6c3;
+  white-space: pre;
+}
+.ngram-extra { font-size: 0.78rem; color: var(--muted); margin-left: 0.35rem; }
+
+/* ─── Accordion rows for rest of candidates ─── */
+.candidate-row {
+  border-top: 1px solid var(--rule-soft);
+}
+.candidate-row:last-of-type { border-bottom: 1px solid var(--rule-soft); }
+
+.candidate-row-summary {
+  display: grid;
+  grid-template-columns: 3rem 1fr auto auto 1.25rem;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.85rem 0.25rem;
+  cursor: pointer;
+  list-style: none;
+  transition: background 0.15s;
+}
+.candidate-row-summary::-webkit-details-marker { display: none; }
+.candidate-row-summary:hover { background: var(--rule-soft); }
+
+.candidate-row-rank {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--accent);
+  font-size: 1rem;
+}
+.candidate-row-name {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--text);
+}
+.candidate-row-method {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.candidate-row-score {
+  font-family: var(--mono);
+  font-size: 0.92rem;
+  min-width: 3rem;
+  text-align: right;
+}
+.candidate-row-chevron {
+  color: var(--muted);
+  font-size: 1.1rem;
+  transition: transform 0.15s;
+  transform-origin: center;
+  text-align: center;
+}
+.candidate-row[open] .candidate-row-chevron { transform: rotate(90deg); }
+.candidate-row[open] .candidate-row-summary {
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.candidate-row-body {
+  padding: 1.25rem 0.25rem 1.75rem;
+}
+.candidate-row-norm {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+.candidate-row-norm code {
+  font-family: var(--mono);
+  padding: 0.1rem 0.35rem;
+  background: var(--bg-warmer);
+  border-radius: 2px;
+}
+
+@media (max-width: 600px) {
+  .candidate-row-summary {
+    grid-template-columns: 2.5rem 1fr auto 1rem;
+  }
+  .candidate-row-method { display: none; }
+}
+
+.empty-note {
+  color: var(--muted);
+  font-style: italic;
+  margin: 0;
+  font-family: var(--serif);
+}
+
+/* ─── Footer ─── */
+footer {
+  border-top: 1px solid var(--rule);
+  margin-top: 3rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+  font-family: var(--serif);
+  font-style: italic;
+}
+footer p { margin: 0; }
+footer span { display: inline-block; }
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-soft);
+}
+footer a:hover { border-bottom-color: var(--accent); }
+
+footer .footer-name {
+  font-family: var(--serif);
+  font-style: normal;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+footer .footer-name strong { font-weight: 500; }
+footer .footer-tagline { margin-bottom: 0.6rem; }
+footer .footer-links {
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+footer .footer-links a { margin: 0 0.25rem; }
+
+/* ─── Methods-page-specific ─── */
+.method-card-page {
+  padding: 3rem 0;
+  border-top: 1px solid var(--rule);
+}
+.method-card-page:first-of-type { border-top: none; padding-top: 1rem; }
+
+.method-card-page h2 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 2.25rem;
+  margin: 0 0 0.35rem;
+  color: var(--text);
+  line-height: 1.1;
+}
+.method-card-page .method-family-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+.method-card-page .method-oneliner {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--text-soft);
+  line-height: 1.5;
+  margin: 0 0 2rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--accent);
+  max-width: 40rem;
+}
+.method-card-page .method-block { margin: 1.5rem 0; }
+.method-card-page .method-block-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}
+.method-card-page .method-block p { margin: 0; color: var(--text-soft); }
+.method-card-page .method-block ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1.25rem;
+  color: var(--text-soft);
+}
+.method-card-page .method-block ul li { padding: 0.15rem 0; }
+.method-card-page .method-worked {
+  background: var(--bg-warmer);
+  padding: 1rem 1.25rem;
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--text);
+  border-left: 2px solid var(--rule);
+}
+.method-card-page .method-worked-pair {
+  font-size: 0.92rem;
+  color: var(--text-soft);
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+.method-card-page .method-viz {
+  background: var(--bg-warmer);
+  padding: 1rem 1.25rem;
+  border-radius: 2px;
+  border-left: 2px solid var(--rule);
+}
+.method-calc {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed var(--rule);
+}
+.method-calc-label {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+.method-calc-where {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 0.85rem;
+  margin: 0 0 0.85rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.method-calc-where dt {
+  font-family: var(--mono);
+  color: var(--text);
+  font-weight: 500;
+}
+.method-calc-where dd {
+  margin: 0;
+  color: var(--text-soft);
+}
+.method-calc-block {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--text);
+  margin: 0 0 0.5rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+.method-calc-block:last-child { margin-bottom: 0; }
+
+/* Try-it page: opt-in calculation toggle inside each method section */
+.method-calc-toggle {
+  margin-top: 0.85rem;
+  border-top: 1px dashed var(--rule);
+  padding-top: 0.6rem;
+}
+.method-calc-toggle > summary {
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.15rem 0;
+  user-select: none;
+}
+.method-calc-toggle > summary::-webkit-details-marker { display: none; }
+.method-calc-toggle > summary::before {
+  content: '▸ ';
+  display: inline-block;
+  margin-right: 0.35rem;
+  transition: transform 0.15s;
+}
+.method-calc-toggle[open] > summary::before { transform: rotate(90deg); }
+.method-calc-toggle > summary:hover { color: var(--accent); }
+/* The shared .method-calc already provides its own top border + spacing,
+   so suppress the duplicate when nested inside the toggle. */
+.method-calc-toggle .method-calc {
+  margin-top: 0.5rem;
+  padding-top: 0;
+  border-top: none;
+}
+.method-card-page code {
+  background: var(--bg-warmer);
+  padding: 0.1rem 0.35rem;
+  border-radius: 2px;
+  font-size: 0.88rem;
+}
+
+/* ─── Concepts-page-specific ─── */
+.chapter {
+  padding: 2rem 0;
+}
+
+/* In-page table of contents */
+.toc {
+  margin: 1.75rem 0 1rem;
+  padding: 1.1rem 1.4rem;
+  background: var(--bg-warmer);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.toc-label {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+}
+.toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.toc-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  text-decoration: none;
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.toc-link:hover {
+  color: var(--accent-deep);
+  border-bottom-color: var(--accent);
+}
+.toc-num {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--accent);
+  font-size: 0.95rem;
+  min-width: 2.25rem;
+}
+html { scroll-behavior: smooth; }
+:target { scroll-margin-top: 1.5rem; }
+.chapter:first-of-type { padding-top: 1rem; }
+.chapter h2 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.6rem;
+  margin: 0 0 1rem;
+  color: var(--text);
+}
+.chapter p { color: var(--text-soft); margin: 0 0 1rem; }
+.chapter ol, .chapter ul {
+  color: var(--text-soft);
+  padding-left: 1.25rem;
+  margin: 0 0 1rem;
+}
+.chapter li { padding: 0.15rem 0; }
+
+/* ─── SVG diagrams (concepts page) ─── */
+.svg-figure {
+  margin: 1.5rem 0 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 1.5rem 1rem 1rem;
+}
+.svg-flow,
+.svg-pipeline {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+.svg-caption {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.92rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 0.85rem;
+}
+
+/* SVG node primitives */
+.svg-node rect {
+  fill: var(--bg-warmer);
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+.svg-node-root rect {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.svg-node-umbrella rect {
+  fill: var(--bg-warmer);
+  stroke: var(--rule);
+  stroke-dasharray: 4 3;
+}
+.svg-node-highlight rect {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.svg-node-good rect {
+  fill: var(--good-soft);
+  stroke: var(--good);
+  stroke-width: 1;
+}
+.svg-node-warn rect {
+  fill: var(--warn-soft);
+  stroke: var(--warn);
+  stroke-width: 1;
+}
+.svg-node-muted rect {
+  fill: var(--bg-warmer);
+  stroke: var(--muted-soft);
+  stroke-width: 1;
+}
+
+/* SVG text */
+.svg-node-title {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 500;
+  fill: var(--text);
+}
+.svg-node-sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 12px;
+  fill: var(--text-soft);
+}
+.svg-step-num {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  fill: var(--accent-deep);
+  font-weight: 500;
+}
+.svg-outcome-cond {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: var(--text-soft);
+  font-weight: 500;
+}
+.svg-node-good .svg-outcome-cond { fill: var(--good); }
+.svg-node-warn .svg-outcome-cond { fill: var(--warn); }
+.svg-node-muted .svg-outcome-cond { fill: var(--muted); }
+
+/* SVG connectors */
+.svg-line {
+  stroke: var(--accent);
+  stroke-width: 1.25;
+  fill: none;
+}
+.svg-arrowhead { fill: var(--accent); stroke: none; }
+.svg-edge-label {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 12px;
+  fill: var(--muted);
+}
+
+/* SVG pill */
+.svg-pill rect { fill: var(--accent); stroke: none; }
+.svg-pill-text {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: var(--surface);
+  font-weight: 500;
+}
+
+.svg-bottom-note {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  fill: var(--accent);
+}
+
+/* Pipeline-specific text styles */
+.svg-io rect {
+  fill: var(--bg-warmer);
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+.svg-io-output rect {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.svg-io-label {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: var(--muted);
+  font-weight: 500;
+}
+.svg-io-output .svg-io-label { fill: var(--accent-deep); }
+.svg-io-value {
+  font-family: var(--mono);
+  font-size: 14px;
+  fill: var(--text);
+}
+
+.svg-stage rect {
+  fill: var(--surface);
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+.svg-stage-num {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  fill: var(--accent);
+}
+.svg-stage-title {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 500;
+  fill: var(--text);
+}
+.svg-stage-alias {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 12px;
+  fill: var(--muted);
+}
+.svg-stage-desc {
+  font-family: var(--sans);
+  font-size: 14px;
+  fill: var(--text-soft);
+  font-weight: 400;
+}
+.svg-mono {
+  font-family: var(--mono);
+  font-size: 13px;
+  fill: var(--text);
+}
+.svg-arrow-glyph { font-size: 11px; fill: var(--accent); }
+.svg-vs {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  fill: var(--muted);
+}
+.svg-score {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--accent-deep);
+}
+.svg-rank-marker {
+  font-family: var(--serif);
+  font-style: italic;
+  fill: var(--accent);
+}
+.svg-rank-tag {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: var(--accent-deep);
+}
+
+@media (max-width: 720px) {
+  .svg-figure { padding: 1rem 0.5rem; overflow-x: auto; }
+}
+
+/* ─── Reference tables (concepts page) ─── */
+.table-wrap {
+  margin: 1.5rem 0 1.25rem;
+  overflow-x: auto;
+}
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  font-weight: 300;
+}
+.ref-table thead th {
+  text-align: left;
+  padding: 0.65rem 0.85rem 0.65rem 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  border-bottom: 1px solid var(--rule);
+}
+.ref-table tbody td {
+  padding: 0.85rem 0.85rem 0.85rem 0;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top;
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+.ref-table tbody td strong {
+  color: var(--text);
+  font-weight: 500;
+}
+.ref-table tbody td code {
+  background: var(--bg-warmer);
+  padding: 0.1rem 0.35rem;
+  border-radius: 2px;
+  font-size: 0.85rem;
+  border: 1px solid var(--rule-soft);
+}
+.ref-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.ref-table .num-col {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--accent);
+  width: 4rem;
+  font-size: 1rem;
+  padding-left: 0.25rem;
+}
+.ref-table .ref-table-highlight {
+  background: var(--accent-soft);
+}
+.ref-table .ref-table-highlight.num-col {
+  color: var(--accent-deep);
+  font-weight: 500;
+}
+.ref-table .ref-tag {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: var(--surface);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 500;
+  margin-left: 0.4rem;
+  vertical-align: middle;
+}
+.ref-table .ref-note {
+  display: block;
+  margin-top: 0.4rem;
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+@media (max-width: 720px) {
+  .ref-table thead { display: none; }
+  .ref-table tbody td { display: block; padding: 0.25rem 0.4rem; border: none; }
+  .ref-table tbody tr {
+    display: block;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .ref-table .num-col { padding-left: 0.4rem; padding-bottom: 0.5rem; }
+}
+
+/* ─── Callout (production-practice notes) ─── */
+.callout {
+  margin: 1.75rem 0 1.25rem;
+  background: var(--bg-warmer);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--warn);
+  border-radius: 2px;
+  padding: 1.25rem 1.5rem;
+}
+.callout-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+}
+.callout-eyebrow {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--warn);
+  font-weight: 500;
+}
+.callout-title {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  color: var(--text);
+  font-weight: 500;
+}
+.callout p {
+  margin: 0 0 0.85rem;
+  color: var(--text-soft);
+  line-height: 1.65;
+}
+.callout p:last-child { margin-bottom: 0; }
+.callout-list {
+  margin: 0 0 0.85rem 1.25rem;
+  padding: 0;
+  color: var(--text-soft);
+}
+.callout-list li {
+  padding: 0.25rem 0;
+  line-height: 1.65;
+}
+.callout-list li strong {
+  color: var(--text);
+  font-weight: 500;
+}
+.callout code {
+  background: var(--surface);
+  padding: 0.1rem 0.35rem;
+  border-radius: 2px;
+  border: 1px solid var(--rule-soft);
+  font-size: 0.85rem;
+}
+
+/* Aside note after a diagram */
+.aside {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--text-soft);
+  border-left: 2px solid var(--rule);
+  padding: 0.25rem 0 0.25rem 1rem;
+  margin: 1.25rem 0;
+}
+.aside strong {
+  font-style: normal;
+  color: var(--text);
+  font-weight: 500;
+}
+.aside a { color: var(--accent-deep); }
+
+
+/* ─── Bundle navigation (single-file deliverable) ─── */
+.bundle-nav {
+  max-width: var(--content-wide);
+  margin: 0 auto;
+  padding: 1.5rem 2rem 0;
+  display: flex;
+  gap: 2rem;
+}
+.bundle-nav-link {
+  background: none;
+  border: none;
+  font: inherit;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.5rem 0 0.35rem;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.bundle-nav-link:hover { color: var(--accent); }
+.bundle-nav-link.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.page { display: none; }
+.page.active { display: block; }
+@media (max-width: 720px) {
+  .bundle-nav { padding: 1.25rem 1.25rem 0; gap: 1.25rem; flex-wrap: wrap; }
+}
+
+    </style>
+  </head>
+  <body>
+    <nav class="bundle-nav" aria-label="Sections">
+      <button class="bundle-nav-link" data-page="try">Try it</button>
+      <button class="bundle-nav-link" data-page="concepts">What is fuzzy matching?</button>
+      <button class="bundle-nav-link" data-page="methods">The algorithms</button>
+    </nav>
+
+    <div class="page" id="page-try">
+<header>
+      <h1>fuzzy-tool</h1>
+      <p class="tagline">
+        Watch how a computer decides what a messy string
+        <em>probably meant</em>. Pick a scenario, type something imperfect,
+        and see how each fuzzy-matching method reasons its way to the
+        likely correct value.
+      </p>
+    </header>
+
+    <main>
+      <!-- Scenario tabs -->
+      <nav class="scenario-tabs" id="scenarioTabs" aria-label="Scenarios">
+        <!-- filled in by app.js -->
+      </nav>
+
+      <!-- The story + input + reference list -->
+      <section class="section section-intro">
+        <p class="scenario-story" id="scenarioStory"></p>
+        <p class="scenario-source" id="scenarioSource"></p>
+        <p class="scenario-noise" id="scenarioNoise"></p>
+        <label class="main-input-label">
+          <span class="eyebrow">What the analyst typed</span>
+          <input type="text" id="mainInput" spellcheck="false" />
+        </label>
+
+        <details class="reference-details">
+          <summary id="referenceSummary">Reference list — what we're matching against</summary>
+          <ul class="reference-list" id="referenceList"></ul>
+        </details>
+      </section>
+
+      <!-- THE ANSWER (moved to the top) -->
+      <section class="section section-verdict">
+        <h2 class="section-heading">The likely match</h2>
+        <div id="verdict"></div>
+      </section>
+
+      <!-- How we got there -->
+      <div class="working">
+        <h2 class="working-heading">How we got there</h2>
+
+        <section class="section">
+          <div class="eyebrow-row">
+            <span class="numeral">N°1</span>
+            <span class="eyebrow">Clean up the text</span>
+          </div>
+          <h3 class="subheading">Every entry goes through the same pipeline</h3>
+          <p class="lede">
+            Before any scoring, your entry and every candidate are put
+            through the same cleanup steps. Normalisation often matters
+            more than which algorithm you choose.
+          </p>
+          <div id="normTrail"></div>
+        </section>
+
+        <section class="section">
+          <div class="eyebrow-row">
+            <span class="numeral">N°2</span>
+            <span class="eyebrow">Compare against the top candidate</span>
+          </div>
+          <h3 class="subheading">The working, for the best match</h3>
+          <p class="lede">
+            A summary of every method's score at the top of the card, with
+            a visual explanation below showing how each method got there.
+          </p>
+          <div id="topCandidates"></div>
+        </section>
+
+        <section class="section">
+          <div class="eyebrow-row">
+            <span class="numeral">N°3</span>
+            <span class="eyebrow">The rest of the candidates</span>
+          </div>
+          <h3 class="subheading">Click any row to see the working</h3>
+          <p class="lede">
+            Every other candidate in the reference list, ranked by best
+            score. Expand a row to see the same per-method breakdown as
+            above.
+          </p>
+          <div id="restCandidates"></div>
+        </section>
+      </div>
+    </main>
+    </div>
+
+    <div class="page" id="page-concepts">
+<header>
+      <h1>What is fuzzy matching?</h1>
+      <p class="tagline">
+        Fuzzy matching is what an analyst reaches for when an exact match
+        isn't enough — when typos, abbreviations, or reordered words stop
+        two obviously-related strings from comparing equal. If your
+        day-to-day involves deduplicating records, cleaning up a customer
+        list, or joining free-text data against a reference table, this
+        page covers where fuzzy matching fits in that work, what you
+        need lined up before you run it, and how it actually decides
+        what counts as a match.
+      </p>
+    </header>
+
+    <main>
+      <section class="chapter">
+        <p class="lede">
+          Fuzzy matching is how a computer figures out that two strings
+          <em>probably</em> mean the same thing, even when they aren't
+          identical. <code>"Jhon Smith"</code> almost certainly meant
+          <code>"John Smith"</code>. A human reads that instantly. A
+          computer needs a small pipeline.
+        </p>
+
+        <nav class="toc" aria-label="On this page">
+          <span class="toc-label">In this chapter</span>
+          <ol class="toc-list">
+            <li>
+              <a href="#workflow" class="toc-link">
+                <span class="toc-num">N°1</span>
+                Where it sits — the five-step workflow
+              </a>
+            </li>
+            <li>
+              <a href="#checklist" class="toc-link">
+                <span class="toc-num">N°2</span>
+                Before you start — the analyst's checklist
+              </a>
+            </li>
+            <li>
+              <a href="#fuzzy-pipeline" class="toc-link">
+                <span class="toc-num">N°3</span>
+                Inside Step 4 — the three stages of a fuzzy match
+              </a>
+            </li>
+          </ol>
+        </nav>
+      </section>
+
+      <!-- Combined flowchart -->
+      <section class="section" id="workflow">
+        <div class="eyebrow-row">
+          <span class="numeral">N°1</span>
+          <span class="eyebrow">Where it sits & when it runs</span>
+        </div>
+        <h2 class="section-heading">The five-step workflow</h2>
+        <p class="lede">
+          Data cleansing has three branches: validation, standardisation,
+          and record linkage. Fuzzy matching lives inside record linkage —
+          but it only fires when exact matching has already failed. Here
+          is the whole pipeline as a single picture.
+        </p>
+
+        <figure class="svg-figure">
+          <svg
+            class="svg-flow"
+            viewBox="0 0 880 760"
+            role="img"
+            aria-labelledby="flowTitle flowDesc"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <title id="flowTitle">The five-step data cleansing workflow</title>
+            <desc id="flowDesc">
+              Data cleansing splits into validation, standardisation, and
+              record linkage. Record linkage runs exact match first, then
+              fuzzy match on failure, then a confidence threshold which
+              produces auto-match, human-review, or unmatched outcomes.
+            </desc>
+
+            <defs>
+              <marker
+                id="arrow"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" class="svg-arrowhead" />
+              </marker>
+            </defs>
+
+            <!-- Root: Data cleansing -->
+            <g class="svg-node svg-node-root">
+              <rect x="340" y="20" width="200" height="60" rx="3" />
+              <text x="440" y="46" class="svg-node-title" text-anchor="middle">Data cleansing</text>
+              <text x="440" y="64" class="svg-node-sub" text-anchor="middle">making messy data usable</text>
+            </g>
+
+            <!-- Lines: root → tier 2 (hub-and-spoke) -->
+            <line x1="440" y1="80" x2="440" y2="110" class="svg-line" />
+            <line x1="150" y1="110" x2="730" y2="110" class="svg-line" />
+            <line x1="150" y1="110" x2="150" y2="140" class="svg-line" marker-end="url(#arrow)" />
+            <line x1="390" y1="110" x2="390" y2="140" class="svg-line" marker-end="url(#arrow)" />
+            <line x1="730" y1="110" x2="730" y2="140" class="svg-line" marker-end="url(#arrow)" />
+
+            <!-- Tier 2: Validate / Standardise / Record linkage -->
+            <g class="svg-node">
+              <rect x="60" y="140" width="180" height="85" rx="3" />
+              <text x="80" y="166" class="svg-step-num">Step 1</text>
+              <text x="150" y="190" class="svg-node-title" text-anchor="middle">Validate</text>
+              <text x="150" y="210" class="svg-node-sub" text-anchor="middle">Is the value sensible at all?</text>
+            </g>
+
+            <g class="svg-node">
+              <rect x="290" y="140" width="200" height="85" rx="3" />
+              <text x="310" y="166" class="svg-step-num">Step 2</text>
+              <text x="390" y="190" class="svg-node-title" text-anchor="middle">Standardise</text>
+              <text x="390" y="210" class="svg-node-sub" text-anchor="middle">Force a consistent format</text>
+            </g>
+
+            <g class="svg-node svg-node-umbrella">
+              <rect x="540" y="140" width="380" height="85" rx="3" />
+              <text x="730" y="178" class="svg-node-title" text-anchor="middle">Record linkage</text>
+              <text x="730" y="200" class="svg-node-sub" text-anchor="middle">Match a record to a known entity in your reference list</text>
+            </g>
+
+            <!-- Lines: Record linkage → cascade (Steps 3-5) -->
+            <line x1="730" y1="225" x2="730" y2="265" class="svg-line" />
+            <line x1="150" y1="265" x2="730" y2="265" class="svg-line" />
+            <line x1="150" y1="265" x2="150" y2="295" class="svg-line" marker-end="url(#arrow)" />
+            <line x1="440" y1="265" x2="440" y2="295" class="svg-line" marker-end="url(#arrow)" />
+            <line x1="730" y1="265" x2="730" y2="295" class="svg-line" marker-end="url(#arrow)" />
+
+            <!-- Cascade row: Step 3 / Step 4 / Step 5 -->
+            <g class="svg-node">
+              <rect x="60" y="295" width="180" height="95" rx="3" />
+              <text x="80" y="321" class="svg-step-num">Step 3</text>
+              <text x="150" y="345" class="svg-node-title" text-anchor="middle">Exact match</text>
+              <text x="150" y="365" class="svg-node-sub" text-anchor="middle">Identical strings only.</text>
+              <text x="150" y="380" class="svg-node-sub" text-anchor="middle">First pass — cheap.</text>
+            </g>
+
+            <g class="svg-node svg-node-highlight">
+              <rect x="350" y="295" width="180" height="95" rx="3" />
+              <text x="370" y="321" class="svg-step-num">Step 4</text>
+              <text x="440" y="345" class="svg-node-title" text-anchor="middle">Fuzzy match</text>
+              <text x="440" y="365" class="svg-node-sub" text-anchor="middle">Tolerate typos &amp; differences.</text>
+              <text x="440" y="380" class="svg-node-sub" text-anchor="middle">Returns scores 0–1.</text>
+              <g class="svg-pill" transform="translate(515, 305)">
+                <rect x="0" y="0" width="60" height="18" rx="9" />
+                <text x="30" y="13" class="svg-pill-text" text-anchor="middle">this tool</text>
+              </g>
+            </g>
+
+            <g class="svg-node">
+              <rect x="640" y="295" width="180" height="95" rx="3" />
+              <text x="660" y="321" class="svg-step-num">Step 5</text>
+              <text x="730" y="345" class="svg-node-title" text-anchor="middle">Apply threshold</text>
+              <text x="730" y="365" class="svg-node-sub" text-anchor="middle">Decide what to do with</text>
+              <text x="730" y="380" class="svg-node-sub" text-anchor="middle">the score.</text>
+            </g>
+
+            <!-- Step 3 → Step 4 (fails) -->
+            <line x1="240" y1="342" x2="346" y2="342" class="svg-line" marker-end="url(#arrow)" />
+            <text x="293" y="334" class="svg-edge-label" text-anchor="middle">fails</text>
+
+            <!-- Step 4 → Step 5 (score 0–1) -->
+            <line x1="530" y1="342" x2="636" y2="342" class="svg-line" marker-end="url(#arrow)" />
+            <text x="583" y="334" class="svg-edge-label" text-anchor="middle">score 0–1</text>
+
+            <!-- Step 5 → outcomes -->
+            <line x1="730" y1="390" x2="730" y2="430" class="svg-line" />
+            <line x1="200" y1="430" x2="730" y2="430" class="svg-line" />
+            <line x1="200" y1="430" x2="200" y2="475" class="svg-line" marker-end="url(#arrow)" />
+            <line x1="440" y1="430" x2="440" y2="475" class="svg-line" marker-end="url(#arrow)" />
+            <line x1="680" y1="430" x2="680" y2="475" class="svg-line" marker-end="url(#arrow)" />
+
+            <!-- Outcome row -->
+            <g class="svg-node svg-node-good">
+              <rect x="110" y="475" width="180" height="75" rx="3" />
+              <text x="200" y="500" class="svg-outcome-cond" text-anchor="middle">High score</text>
+              <text x="200" y="525" class="svg-node-title" text-anchor="middle">Auto-match</text>
+            </g>
+
+            <g class="svg-node svg-node-warn">
+              <rect x="350" y="475" width="180" height="75" rx="3" />
+              <text x="440" y="500" class="svg-outcome-cond" text-anchor="middle">Medium score</text>
+              <text x="440" y="525" class="svg-node-title" text-anchor="middle">Human review</text>
+            </g>
+
+            <g class="svg-node svg-node-muted">
+              <rect x="590" y="475" width="180" height="75" rx="3" />
+              <text x="680" y="500" class="svg-outcome-cond" text-anchor="middle">Low score</text>
+              <text x="680" y="525" class="svg-node-title" text-anchor="middle">Unmatched</text>
+            </g>
+
+            <!-- Bottom note -->
+            <text x="440" y="600" class="svg-bottom-note" text-anchor="middle">
+              ↓ Step 4 in detail ↓
+            </text>
+          </svg>
+          <figcaption class="svg-caption">
+            The five-step data cleansing workflow. Steps 3–5 run as a
+            cascade inside record linkage.
+          </figcaption>
+        </figure>
+
+        <!-- Step reference table -->
+        <div class="table-wrap">
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th class="num-col">Step</th>
+                <th>Name</th>
+                <th>What it does</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="num-col">1</td>
+                <td><strong>Validate</strong></td>
+                <td>Is the value sensible at all? Reject obviously broken records before you do anything else.</td>
+                <td>Email contains <code>@</code>; postcode is 4 digits</td>
+              </tr>
+              <tr>
+                <td class="num-col">2</td>
+                <td><strong>Standardise</strong></td>
+                <td>Force every record into the same format so later steps can compare like-for-like.</td>
+                <td><code>JOHN SMITH</code> → <code>John Smith</code></td>
+              </tr>
+              <tr>
+                <td class="num-col">3</td>
+                <td><strong>Exact match</strong></td>
+                <td>Is the value in the reference list verbatim? Cheap, fast, unambiguous — try this first.</td>
+                <td><code>John Smith</code> == <code>John Smith</code> ✓</td>
+              </tr>
+              <tr>
+                <td class="num-col ref-table-highlight">4</td>
+                <td class="ref-table-highlight"><strong>Fuzzy match</strong> <span class="ref-tag">this tool</span></td>
+                <td class="ref-table-highlight">When exact fails, score similarity 0–1 against every candidate in the reference list.</td>
+                <td class="ref-table-highlight"><code>Jhon Smith</code> → <code>John Smith</code> (0.94)</td>
+              </tr>
+              <tr>
+                <td class="num-col">5</td>
+                <td><strong>Apply threshold</strong></td>
+                <td>Decide what the score means: auto-match, send to human review, or leave unmatched.</td>
+                <td>0.94 → auto-match</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="aside">
+          <strong>Standardisation vs normalisation</strong> — they overlap
+          in technique but live at different levels. Standardisation (Step
+          2 above) is the dataset-level practice: <em>every phone number
+          in our system should look the same</em>. Normalisation is the
+          per-string step inside Step 4, applied to a single value just
+          before it gets compared. You'll see normalisation in the
+          pipeline below.
+        </p>
+
+        <div class="callout">
+          <div class="callout-head">
+            <span class="callout-eyebrow">In practice</span>
+            <span class="callout-title">You don't score against millions</span>
+          </div>
+          <p>
+            The diagram shows fuzzy match producing a score for every
+            candidate in the reference list. That works for the 22 entries
+            in this tool. It does not work for a CRM with a million
+            customers — that would be a million similarity calculations
+            <em>per messy input</em>.
+          </p>
+          <p>
+            In production, fuzzy match runs as a <strong>two-step</strong>
+            process inside Step 4:
+          </p>
+          <ol class="callout-list">
+            <li>
+              <strong>Candidate generation</strong> (a.k.a. <em>blocking</em>) —
+              cheaply shortlist a few dozen candidates that <em>could</em>
+              be a match. Common techniques: blocking keys (only compare
+              records sharing the same surname initial or postcode
+              prefix), trigram indexes (PostgreSQL <code>pg_trgm</code>,
+              Elasticsearch), or locality-sensitive hashing (MinHash / LSH).
+            </li>
+            <li>
+              <strong>Scoring</strong> — run the expensive similarity
+              algorithms on the shortlist only.
+            </li>
+          </ol>
+          <p>
+            A good blocking strategy turns a million-row problem into a
+            fifty-row problem before the similarity algorithm sees a
+            single character. If you're working with a real-world
+            reference list, look at libraries like
+            <code>recordlinkage</code>, <code>dedupe</code>, or
+            <code>splink</code> — they handle blocking and scoring as one
+            pipeline.
+          </p>
+        </div>
+      </section>
+
+      <!-- Analyst's checklist -->
+      <section class="section" id="checklist">
+        <div class="eyebrow-row">
+          <span class="numeral">N°2</span>
+          <span class="eyebrow">Before you start</span>
+        </div>
+        <h2 class="section-heading">The analyst's checklist</h2>
+        <p class="lede">
+          Six things you want lined up before you run the pipeline.
+          Skipping any of them tends to show up later as a confusing
+          result or a meeting about whether a match is "really" a match.
+        </p>
+
+        <div class="table-wrap">
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th class="num-col">#</th>
+                <th>What you need</th>
+                <th>Why</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="num-col">1</td>
+                <td><strong>Input strings</strong></td>
+                <td>The messy data you want to match. Can be one entry, a spreadsheet column, or a stream.</td>
+                <td><code>Jhon Smith</code>, <code>10 smith st</code></td>
+              </tr>
+              <tr>
+                <td class="num-col">2</td>
+                <td><strong>Reference list</strong></td>
+                <td>The canonical, authoritative values you're matching <em>against</em>. Without this, there's nothing to match to.</td>
+                <td>A customer master list, postcode register, product catalogue</td>
+              </tr>
+              <tr>
+                <td class="num-col">3</td>
+                <td><strong>Knowledge of the noise</strong></td>
+                <td>What kinds of errors do you actually expect? Drives which algorithm earns its keep.</td>
+                <td>Typos? Reordered words? Abbreviations? Phonetic variants?</td>
+              </tr>
+              <tr>
+                <td class="num-col">4</td>
+                <td><strong>Normalisation rules</strong></td>
+                <td>Cleanups applied before any scoring. Must be identical on both sides — input and reference.</td>
+                <td>Lowercase, strip punctuation, remove accents, expand <code>St</code>→<code>Street</code></td>
+              </tr>
+              <tr>
+                <td class="num-col">5</td>
+                <td><strong>Confidence thresholds</strong></td>
+                <td>Cutoffs for auto-match, human review, and unmatched. A <em>business</em> decision, not a technical one. <span class="ref-note">Only needed when fuzzy match runs — exact match is unambiguous and doesn't use a threshold.</span></td>
+                <td>≥0.90 auto · 0.70–0.90 review · &lt;0.70 unmatched</td>
+              </tr>
+              <tr>
+                <td class="num-col">6</td>
+                <td><strong>A review process</strong></td>
+                <td>Where flagged matches go, who looks at them, how fast, and where the final answer is recorded.</td>
+                <td>Queue in a sheet → reviewed daily → outcome written back to source</td>
+              </tr>
+              <tr>
+                <td class="num-col">7</td>
+                <td><strong>A candidate-generation strategy</strong></td>
+                <td>Only matters if the reference list is large. You can't realistically score one input against a million records — you need a way to shortlist first. <span class="ref-note">See the candidate-generation note in the workflow above.</span></td>
+                <td>Block by surname initial, postcode prefix, or trigram index</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- The 3-stage fuzzy match pipeline -->
+      <section class="section" id="fuzzy-pipeline">
+        <div class="eyebrow-row">
+          <span class="numeral">N°3</span>
+          <span class="eyebrow">Inside Step 4 — fuzzy match</span>
+        </div>
+        <h2 class="section-heading">The three stages of a fuzzy match</h2>
+        <p class="lede">
+          Zooming into Step 4 from the workflow above. Three explicit
+          stages run in order, every time. The same worked example flows
+          through all three so you can watch the data transform.
+        </p>
+
+        <figure class="svg-figure">
+          <svg
+            class="svg-pipeline"
+            viewBox="0 0 720 870"
+            role="img"
+            aria-labelledby="pipeTitle pipeDesc"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <title id="pipeTitle">The three stages of a fuzzy match</title>
+            <desc id="pipeDesc">
+              Input flows through normalisation, comparison, and ranking
+              to produce the likely match.
+            </desc>
+
+            <defs>
+              <marker
+                id="arrow2"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" class="svg-arrowhead" />
+              </marker>
+            </defs>
+
+            <!-- Input -->
+            <g class="svg-io svg-io-input">
+              <rect x="200" y="20" width="320" height="55" rx="3" />
+              <text x="360" y="42" class="svg-io-label" text-anchor="middle">YOU TYPE</text>
+              <text x="360" y="64" class="svg-io-value" text-anchor="middle">Jhon Smith</text>
+            </g>
+
+            <line x1="360" y1="75" x2="360" y2="110" class="svg-line" marker-end="url(#arrow2)" />
+
+            <!-- Stage 1: Normalisation -->
+            <g class="svg-stage">
+              <rect x="60" y="110" width="600" height="170" rx="3" />
+              <text x="80" y="138" class="svg-stage-num">Stage 1</text>
+              <text x="80" y="164" class="svg-stage-title">Normalisation</text>
+              <text x="220" y="164" class="svg-stage-alias">a.k.a. cleaning</text>
+              <text x="80" y="194" class="svg-stage-desc">Tidy each string into a consistent form: lowercase, strip punctuation, collapse</text>
+              <text x="80" y="216" class="svg-stage-desc">whitespace. Apply identical rules to your input and every reference entry.</text>
+              <g transform="translate(80, 258)">
+                <text x="0" y="0" class="svg-mono">Jhon Smith</text>
+                <text x="170" y="0" class="svg-arrow-glyph">▶</text>
+                <text x="200" y="0" class="svg-mono">jhon smith</text>
+              </g>
+            </g>
+
+            <line x1="360" y1="280" x2="360" y2="315" class="svg-line" marker-end="url(#arrow2)" />
+
+            <!-- Stage 2: Comparison -->
+            <g class="svg-stage">
+              <rect x="60" y="315" width="600" height="245" rx="3" />
+              <text x="80" y="343" class="svg-stage-num">Stage 2</text>
+              <text x="80" y="369" class="svg-stage-title">Comparison</text>
+              <text x="200" y="369" class="svg-stage-alias">a.k.a. similarity scoring</text>
+              <text x="80" y="399" class="svg-stage-desc">Score the cleaned input against every cleaned candidate. Each pair returns a</text>
+              <text x="80" y="421" class="svg-stage-desc">number between 0 (nothing in common) and 1 (perfectly identical strings).</text>
+              <g transform="translate(80, 460)">
+                <text x="0" y="0" class="svg-mono">jhon smith</text>
+                <text x="170" y="0" class="svg-vs">vs</text>
+                <text x="200" y="0" class="svg-mono">john smith</text>
+                <text x="400" y="0" class="svg-arrow-glyph">▶</text>
+                <text x="440" y="0" class="svg-score">0.94</text>
+              </g>
+              <g transform="translate(80, 484)">
+                <text x="0" y="0" class="svg-mono">jhon smith</text>
+                <text x="170" y="0" class="svg-vs">vs</text>
+                <text x="200" y="0" class="svg-mono">jon smyth</text>
+                <text x="400" y="0" class="svg-arrow-glyph">▶</text>
+                <text x="440" y="0" class="svg-score">0.84</text>
+              </g>
+              <g transform="translate(80, 508)">
+                <text x="0" y="0" class="svg-mono">jhon smith</text>
+                <text x="170" y="0" class="svg-vs">vs</text>
+                <text x="200" y="0" class="svg-mono">wei chen</text>
+                <text x="400" y="0" class="svg-arrow-glyph">▶</text>
+                <text x="440" y="0" class="svg-score">0.18</text>
+              </g>
+              <text x="640" y="540" class="svg-stage-desc" text-anchor="end">…22 candidates total</text>
+            </g>
+
+            <line x1="360" y1="560" x2="360" y2="595" class="svg-line" marker-end="url(#arrow2)" />
+
+            <!-- Stage 3: Ranking -->
+            <g class="svg-stage">
+              <rect x="60" y="595" width="600" height="170" rx="3" />
+              <text x="80" y="623" class="svg-stage-num">Stage 3</text>
+              <text x="80" y="649" class="svg-stage-title">Ranking</text>
+              <text x="160" y="649" class="svg-stage-alias">a.k.a. picking the winner</text>
+              <text x="80" y="679" class="svg-stage-desc">Sort the scored candidates, highest first. The top entry is the likely match —</text>
+              <text x="80" y="701" class="svg-stage-desc">but apply your confidence threshold before treating any score as a final answer.</text>
+              <g transform="translate(80, 743)">
+                <text x="0" y="0" class="svg-rank-marker">N°1</text>
+                <text x="200" y="0" class="svg-mono">John Smith</text>
+                <text x="440" y="0" class="svg-score">0.94</text>
+                <text x="500" y="0" class="svg-rank-tag">likely match</text>
+              </g>
+            </g>
+
+            <line x1="360" y1="765" x2="360" y2="800" class="svg-line" marker-end="url(#arrow2)" />
+
+            <!-- Output -->
+            <g class="svg-io svg-io-output">
+              <rect x="200" y="800" width="320" height="55" rx="3" />
+              <text x="360" y="822" class="svg-io-label" text-anchor="middle">THE LIKELY MATCH</text>
+              <text x="360" y="844" class="svg-io-value" text-anchor="middle">John Smith</text>
+            </g>
+          </svg>
+          <figcaption class="svg-caption">
+            What runs every time fuzzy match (Step 4) is invoked.
+          </figcaption>
+        </figure>
+
+        <p class="aside">
+          The <a href="index.html">tool</a> shows this pipeline in action
+          — type a messy entry and watch each stage play out. The
+          <a href="methods.html">algorithms page</a> covers what happens
+          inside Stage 2: the four comparison techniques and when each
+          one earns its keep.
+        </p>
+      </section>
+    </main>
+    </div>
+
+    <div class="page" id="page-methods">
+<header>
+      <h1>The algorithms</h1>
+      <p class="tagline">
+        Plain-English explanations of the four similarity-scoring
+        algorithms used inside Stage 2 of the fuzzy-matching pipeline.
+        No code, no math — just the intuition and when each one earns
+        its keep.
+      </p>
+    </header>
+
+    <main>
+      <section class="chapter">
+        <h2>Why more than one algorithm?</h2>
+        <p>
+          There's no single "best" similarity score. Each algorithm
+          measures <em>a different kind of similarity</em>. A name with a
+          typo needs one approach; a sentence with words reordered needs
+          another; a partial match inside a longer string needs a third.
+          The skill is picking the right tool — or combining several — for
+          the noise you actually have.
+        </p>
+        <p>
+          The four algorithms below all sit inside <strong>Stage 2</strong>
+          of the pipeline on the
+          <a href="concepts.html">concepts page</a>. They assume the
+          strings have already been normalised.
+        </p>
+
+        <nav class="toc" aria-label="On this page">
+          <span class="toc-label">In this chapter</span>
+          <ol class="toc-list">
+            <li>
+              <a href="#levenshtein" class="toc-link">
+                <span class="toc-num">N°1</span>
+                Levenshtein
+              </a>
+            </li>
+            <li>
+              <a href="#jaro-winkler" class="toc-link">
+                <span class="toc-num">N°2</span>
+                Jaro-Winkler
+              </a>
+            </li>
+            <li>
+              <a href="#jaccard-tokens" class="toc-link">
+                <span class="toc-num">N°3</span>
+                Jaccard similarity (tokens)
+              </a>
+            </li>
+            <li>
+              <a href="#jaccard-ngrams" class="toc-link">
+                <span class="toc-num">N°4</span>
+                Jaccard similarity (n-grams)
+              </a>
+            </li>
+          </ol>
+        </nav>
+      </section>
+
+      <!-- Levenshtein -->
+      <article class="method-card-page" id="levenshtein">
+        <div class="eyebrow-row">
+          <span class="numeral">N°1</span>
+          <span class="eyebrow">Method</span>
+        </div>
+        <h2>Levenshtein</h2>
+        <div class="method-family-label">Edit distance</div>
+        <p class="method-oneliner">
+          Count the fewest single-character edits — insertions, deletions,
+          and substitutions — needed to turn one string into the other.
+        </p>
+
+        <div class="method-block">
+          <div class="method-block-label">Analogy</div>
+          <p>
+            Think of it as counting keystrokes. How many characters would
+            you have to change to fix a typo? That's the distance. Divide
+            by the length of the longer string to turn the count into a
+            0-to-1 similarity score.
+          </p>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">Worked example</div>
+          <div class="method-worked-pair">
+            <code>kitten</code> vs <code>sitting</code> — substitutions in
+            orange, the trailing insert in blue.
+          </div>
+          <div class="method-viz" data-method="levenshtein" data-a="kitten" data-b="sitting"></div>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When to use</div>
+          <ul>
+            <li>Typos in short-to-medium strings (names, product codes).</li>
+            <li>Spelling variations of the same word in the same language.</li>
+            <li>When every character matters and position is meaningful.</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When it fails</div>
+          <ul>
+            <li>Word reordering ("John Smith" vs "Smith, John" scores near zero).</li>
+            <li>Very different string lengths — many edits even if the content is similar.</li>
+            <li>Phonetic differences ("Catherine" vs "Katherine" starts losing ground fast).</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">In your own project</div>
+          <p>
+            Python: <code>rapidfuzz</code> (fast) or <code>python-Levenshtein</code>.
+            JavaScript: <code>fastest-levenshtein</code>.
+            Almost every language has a well-tested implementation — you
+            shouldn't write your own unless you're learning.
+          </p>
+        </div>
+      </article>
+
+      <!-- Jaro-Winkler -->
+      <article class="method-card-page" id="jaro-winkler">
+        <div class="eyebrow-row">
+          <span class="numeral">N°2</span>
+          <span class="eyebrow">Method</span>
+        </div>
+        <h2>Jaro-Winkler</h2>
+        <div class="method-family-label">Edit distance (specialized)</div>
+        <p class="method-oneliner">
+          Like Levenshtein, but purpose-built for short strings like names,
+          and weighted to reward pairs that start with the same characters.
+        </p>
+
+        <div class="method-block">
+          <div class="method-block-label">Analogy</div>
+          <p>
+            People typo the ends of names more often than the beginnings.
+            Jaro-Winkler bakes this into the score: strings that share a
+            prefix get a bonus. "Jonathan" and "Jonathon" score higher than
+            a character count alone would predict, because the first five
+            letters match.
+          </p>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">Worked example</div>
+          <div class="method-worked-pair">
+            <code>jonathan</code> vs <code>jonathon</code> — matched
+            characters in green, the shared prefix underlined for the
+            Winkler bonus.
+          </div>
+          <div class="method-viz" data-method="jaro_winkler" data-a="jonathan" data-b="jonathon"></div>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When to use</div>
+          <ul>
+            <li>Short strings where order matters: names, product SKUs, place names.</li>
+            <li>When you want to weight "same start" as evidence of a match.</li>
+            <li>Record-linkage tasks (deduplicating customer or patient records).</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When it fails</div>
+          <ul>
+            <li>Long strings like sentences — the prefix weighting stops helping.</li>
+            <li>Word reordering — same weakness as Levenshtein.</li>
+            <li>Phonetic variations — combine with a phonetic method if you need those.</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">In your own project</div>
+          <p>
+            Python: <code>jellyfish</code>, <code>rapidfuzz</code>.
+            JavaScript: <code>natural</code>, <code>string-similarity-js</code>.
+          </p>
+        </div>
+      </article>
+
+      <!-- Jaccard tokens -->
+      <article class="method-card-page" id="jaccard-tokens">
+        <div class="eyebrow-row">
+          <span class="numeral">N°3</span>
+          <span class="eyebrow">Method</span>
+        </div>
+        <h2>Jaccard similarity (tokens)</h2>
+        <div class="method-family-label">Set-based</div>
+        <p class="method-oneliner">
+          Treat each string as a bag of words. Similarity = how many words
+          they share, divided by the total number of unique words across
+          both.
+        </p>
+
+        <div class="method-block">
+          <div class="method-block-label">Analogy</div>
+          <p>
+            Ignore word order entirely. "John Smith" and "Smith, John"
+            contain the same words, so they're the same to this method.
+            Great when human data entry scrambles the order but keeps the
+            content.
+          </p>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">Worked example</div>
+          <div class="method-worked-pair">
+            <code>red blue green</code> vs <code>green red yellow</code> —
+            shared words on the left, words unique to each string on the
+            right.
+          </div>
+          <div class="method-viz" data-method="jaccard_tokens" data-a="red blue green" data-b="green red yellow"></div>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When to use</div>
+          <ul>
+            <li>Text where word order varies but the words themselves carry the meaning.</li>
+            <li>Short notes, tags, keyword lists, concatenated name fields.</li>
+            <li>As one input when combining multiple methods.</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When it fails</div>
+          <ul>
+            <li>Typos within words — "apple" and "appel" are totally different tokens.</li>
+            <li>Single-word strings — the set has one element, so it's all-or-nothing.</li>
+            <li>Different vocabularies that mean the same thing — "car" vs "automobile".</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">In your own project</div>
+          <p>
+            A five-line function in any language. For large-scale
+            near-duplicate detection, look up MinHash / LSH.
+          </p>
+        </div>
+      </article>
+
+      <!-- Jaccard n-grams -->
+      <article class="method-card-page" id="jaccard-ngrams">
+        <div class="eyebrow-row">
+          <span class="numeral">N°4</span>
+          <span class="eyebrow">Method</span>
+        </div>
+        <h2>Jaccard similarity (n-grams)</h2>
+        <div class="method-family-label">Set-based</div>
+        <p class="method-oneliner">
+          Same idea as Jaccard tokens, but instead of whole words you use
+          short overlapping character sequences. Catches similarity inside
+          words.
+        </p>
+
+        <div class="method-block">
+          <div class="method-block-label">Analogy</div>
+          <p>
+            Slide a small window across the string and collect every
+            length-n chunk. "Street" and "St" share the 2-gram "St" — enough
+            to catch a partial match. This is what powers a lot of
+            "typo-tolerant" search under the hood.
+          </p>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">Worked example</div>
+          <div class="method-worked-pair">
+            <code>hello</code> vs <code>hallo</code> with 2-grams. The
+            shared character pairs are the overlap that drives the score.
+          </div>
+          <div class="method-viz" data-method="jaccard_ngrams" data-a="hello" data-b="hallo"></div>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When to use</div>
+          <ul>
+            <li>Fuzzy search and autocomplete.</li>
+            <li>Finding near-duplicate text blocks.</li>
+            <li>Detecting partial matches inside long strings.</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">When it fails</div>
+          <ul>
+            <li>Very short strings — a 2-letter string has only one 2-gram.</li>
+            <li>Totally different vocabularies — shares no n-grams at all.</li>
+            <li>When position matters. Order of n-grams is lost.</li>
+          </ul>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-label">In your own project</div>
+          <p>
+            Easy to write by hand, or look for <code>ngram</code> utilities
+            in your language's standard library. For big-scale search,
+            inverted indexes over n-grams are a classic trick.
+          </p>
+        </div>
+      </article>
+
+      <!-- Wrap-up -->
+      <section class="chapter">
+        <h2>Combining algorithms in practice</h2>
+        <p>
+          Real pipelines often run <strong>several algorithms at once</strong>
+          and either take the highest score, a weighted sum, or feed all
+          the scores into a classifier. The
+          <a href="index.html">tool</a> shows every algorithm's score
+          side-by-side for each candidate, so you can see how they agree
+          and disagree on the same pair of strings.
+        </p>
+        <p>
+          For when each score crosses into "auto-match" or "needs human
+          review", see the threshold cascade on the
+          <a href="concepts.html">concepts page</a>.
+        </p>
+      </section>
+    </main>
+    </div>
+
+    <footer>
+      <p class="footer-name"><strong>Jennifer Payne</strong> — data scientist</p>
+      <p class="footer-tagline">Making the complex simple, one tech project at a time.</p>
+      <p class="footer-links">
+        <a href="https://github.com/majorpayne-2021" target="_blank" rel="noopener">GitHub</a>
+        ·
+        <a href="https://www.linkedin.com/in/jenniferapayne25/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+    </footer>
+
+    <script>
+// ─── util.js ───
+// Shared utilities. Anything imported by multiple modules belongs here
+// so the bundler doesn't get a top-level name collision.
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+
+// ─── normalization.js ───
+// Normalization pipeline — each step is a pure function so the UI can
+// display intermediate results and teach what each step does.
+//
+// The lesson: normalization often matters more than algorithm choice.
+const steps = [
+  {
+    id: 'lowercase',
+    label: 'Lowercase',
+    explain: 'Case differences ("Smith" vs "smith") are almost always noise.',
+    apply: (s) => s.toLowerCase(),
+  },
+  {
+    id: 'unicode_fold',
+    label: 'Fold accents',
+    explain: 'Strip diacritics so "Müller" matches "Muller" and "café" matches "cafe".',
+    apply: (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
+  },
+  {
+    id: 'strip_punctuation',
+    label: 'Strip punctuation',
+    explain: 'Remove commas, periods, apostrophes — usually not meaningful for matching.',
+    apply: (s) => s.replace(/[^\p{L}\p{N}\s]/gu, ' '),
+  },
+  {
+    id: 'collapse_whitespace',
+    label: 'Collapse whitespace',
+    explain: 'Turn any run of spaces/tabs into a single space and trim the ends.',
+    apply: (s) => s.replace(/\s+/g, ' ').trim(),
+  },
+  {
+    id: 'token_sort',
+    label: 'Sort tokens',
+    explain: 'Sort words alphabetically so "Smith John" matches "John Smith".',
+    apply: (s) => s.split(' ').filter(Boolean).sort().join(' '),
+  },
+];
+
+// Run the pipeline up to and including the given step id (or all steps if no id).
+// Returns an array of { id, label, output } so the UI can render every stage.
+function runPipeline(input, enabledIds = null) {
+  const active = enabledIds
+    ? steps.filter((s) => enabledIds.includes(s.id))
+    : steps;
+  const stages = [{ id: 'raw', label: 'Raw input', output: input }];
+  let current = input;
+  for (const step of active) {
+    current = step.apply(current);
+    stages.push({ id: step.id, label: step.label, output: current });
+  }
+  return stages;
+}
+
+// Convenience: just return the final normalized string.
+function normalize(input, enabledIds = null) {
+  const stages = runPipeline(input, enabledIds);
+  return stages[stages.length - 1].output;
+}
+
+
+// ─── methods.js ───
+// Fuzzy matching methods.
+//
+// Each method exports a function of shape:
+//   (a: string, b: string) -> { score, explanation, details }
+//
+// `details` is method-specific and drives the visual explanations in
+// visualize.js. Implementations are kept deliberately readable — this is
+// a teaching tool, so the code itself is part of the lesson. Production
+// code would reach for `rapidfuzz` (Python) or `fastest-levenshtein` (JS)
+// for speed.
+
+// ─── Levenshtein ─────────────────────────────────────────────────────────
+// The minimum number of single-character edits (insert, delete, substitute)
+// needed to turn a into b. We divide by max(|a|, |b|) to get a 0..1 similarity.
+//
+// The `details.ops` array reconstructs the edit script by backtracking
+// through the DP table — this is what the visualizer uses to show the
+// character-by-character alignment with insert / delete / substitute
+// operations highlighted.
+function levenshtein(a, b) {
+  if (a === b) {
+    return {
+      score: 1,
+      explanation: 'Identical strings.',
+      details: { distance: 0, ops: [...a].map((ch) => ({ op: 'match', a: ch, b: ch })) },
+    };
+  }
+  if (a.length === 0 || b.length === 0) {
+    const ops = a.length
+      ? [...a].map((ch) => ({ op: 'del', a: ch, b: null }))
+      : [...b].map((ch) => ({ op: 'ins', a: null, b: ch }));
+    return {
+      score: 0,
+      explanation: 'One string is empty.',
+      details: { distance: Math.max(a.length, b.length), ops },
+    };
+  }
+
+  const m = a.length;
+  const n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,        // deletion
+        dp[i][j - 1] + 1,        // insertion
+        dp[i - 1][j - 1] + cost, // substitution
+      );
+    }
+  }
+
+  // Backtrack to reconstruct the alignment — this is what the UI renders.
+  const ops = [];
+  let i = m;
+  let j = n;
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && a[i - 1] === b[j - 1] && dp[i][j] === dp[i - 1][j - 1]) {
+      ops.unshift({ op: 'match', a: a[i - 1], b: b[j - 1] });
+      i--; j--;
+    } else if (i > 0 && j > 0 && dp[i][j] === dp[i - 1][j - 1] + 1) {
+      ops.unshift({ op: 'sub', a: a[i - 1], b: b[j - 1] });
+      i--; j--;
+    } else if (i > 0 && dp[i][j] === dp[i - 1][j] + 1) {
+      ops.unshift({ op: 'del', a: a[i - 1], b: null });
+      i--;
+    } else {
+      ops.unshift({ op: 'ins', a: null, b: b[j - 1] });
+      j--;
+    }
+  }
+
+  const distance = dp[m][n];
+  const score = 1 - distance / Math.max(m, n);
+  return {
+    score,
+    explanation: `${distance} single-character edit${distance === 1 ? '' : 's'} needed.`,
+    details: { distance, ops },
+  };
+}
+
+// ─── Jaro-Winkler ────────────────────────────────────────────────────────
+// Bounded 0..1 similarity. Good for short strings like names — boosts the
+// score when strings share a common prefix (people typo the end, not the start).
+function jaroWinkler(a, b, prefixScale = 0.1, prefixMax = 4) {
+  if (a === b) {
+    return {
+      score: 1,
+      explanation: 'Identical strings.',
+      details: { jaro: 1, prefix: Math.min(a.length, prefixMax), transpositions: 0, aMatches: new Array(a.length).fill(true), bMatches: new Array(b.length).fill(true) },
+    };
+  }
+  if (a.length === 0 || b.length === 0) {
+    return {
+      score: 0,
+      explanation: 'One string is empty.',
+      details: { jaro: 0, prefix: 0, transpositions: 0, aMatches: [], bMatches: [] },
+    };
+  }
+
+  // A character in a is considered "matching" with b if it appears within
+  // this window. The window grows with the longer string.
+  const matchWindow = Math.max(0, Math.floor(Math.max(a.length, b.length) / 2) - 1);
+
+  const aMatches = new Array(a.length).fill(false);
+  const bMatches = new Array(b.length).fill(false);
+  let matches = 0;
+
+  for (let i = 0; i < a.length; i++) {
+    const start = Math.max(0, i - matchWindow);
+    const end = Math.min(i + matchWindow + 1, b.length);
+    for (let j = start; j < end; j++) {
+      if (bMatches[j]) continue;
+      if (a[i] !== b[j]) continue;
+      aMatches[i] = true;
+      bMatches[j] = true;
+      matches++;
+      break;
+    }
+  }
+
+  if (matches === 0) {
+    return {
+      score: 0,
+      explanation: 'No matching characters in window.',
+      details: { jaro: 0, prefix: 0, transpositions: 0, aMatches, bMatches },
+    };
+  }
+
+  // Count transpositions: matched characters that appear in different orders.
+  let transpositions = 0;
+  let k = 0;
+  for (let i = 0; i < a.length; i++) {
+    if (!aMatches[i]) continue;
+    while (!bMatches[k]) k++;
+    if (a[i] !== b[k]) transpositions++;
+    k++;
+  }
+  transpositions /= 2;
+
+  const jaro =
+    (matches / a.length + matches / b.length + (matches - transpositions) / matches) / 3;
+
+  // Winkler boost: add weight for a shared prefix up to prefixMax characters.
+  let prefix = 0;
+  for (let i = 0; i < Math.min(prefixMax, a.length, b.length); i++) {
+    if (a[i] === b[i]) prefix++;
+    else break;
+  }
+  const score = jaro + prefix * prefixScale * (1 - jaro);
+
+  return {
+    score,
+    explanation: `Jaro ${jaro.toFixed(2)}, prefix boost from ${prefix} shared leading character${prefix === 1 ? '' : 's'}.`,
+    details: { jaro, prefix, transpositions, aMatches, bMatches, matches },
+  };
+}
+
+// ─── Jaccard (token-based) ───────────────────────────────────────────────
+// Treat each string as a set of tokens (words). Similarity = intersection / union.
+// Insensitive to word order — great when "John Smith" and "Smith John" should match.
+function jaccardTokens(a, b) {
+  const tokensA = new Set(a.split(/\s+/).filter(Boolean));
+  const tokensB = new Set(b.split(/\s+/).filter(Boolean));
+  if (tokensA.size === 0 && tokensB.size === 0) {
+    return {
+      score: 1,
+      explanation: 'Both strings empty.',
+      details: { shared: [], uniqueA: [], uniqueB: [] },
+    };
+  }
+  const shared = [...tokensA].filter((t) => tokensB.has(t));
+  const uniqueA = [...tokensA].filter((t) => !tokensB.has(t));
+  const uniqueB = [...tokensB].filter((t) => !tokensA.has(t));
+  const union = new Set([...tokensA, ...tokensB]);
+  const score = shared.length / union.size;
+  return {
+    score,
+    explanation: `${shared.length} shared token${shared.length === 1 ? '' : 's'} out of ${union.size} total unique.`,
+    details: { shared, uniqueA, uniqueB },
+  };
+}
+
+// ─── Jaccard (character n-gram) ──────────────────────────────────────────
+// Same idea, but with overlapping character sequences of length n instead
+// of whole words. Catches partial matches within words ("Street" vs "St").
+function jaccardNgrams(a, b, n = 2) {
+  const ngrams = (s) => {
+    const grams = new Set();
+    const padded = ` ${s} `;
+    for (let i = 0; i <= padded.length - n; i++) grams.add(padded.slice(i, i + n));
+    return grams;
+  };
+  const A = ngrams(a);
+  const B = ngrams(b);
+  if (A.size === 0 && B.size === 0) {
+    return {
+      score: 1,
+      explanation: 'Both strings empty.',
+      details: { n, shared: [], uniqueA: [], uniqueB: [] },
+    };
+  }
+  const shared = [...A].filter((g) => B.has(g));
+  const uniqueA = [...A].filter((g) => !B.has(g));
+  const uniqueB = [...B].filter((g) => !A.has(g));
+  const union = new Set([...A, ...B]);
+  const score = shared.length / union.size;
+  return {
+    score,
+    explanation: `${shared.length} shared character ${n}-grams out of ${union.size}.`,
+    details: { n, shared, uniqueA, uniqueB },
+  };
+}
+
+// ─── Method registry ─────────────────────────────────────────────────────
+// Single source of truth for the UI. Add a method here and it appears
+// automatically in the tool.
+const METHODS = [
+  {
+    id: 'levenshtein',
+    label: 'Levenshtein',
+    family: 'Edit distance',
+    tagline: 'Counts character edits — the classic for typos.',
+    fn: levenshtein,
+  },
+  {
+    id: 'jaro_winkler',
+    label: 'Jaro-Winkler',
+    family: 'Edit distance',
+    tagline: 'Weights shared prefixes. Built for short strings like names.',
+    fn: jaroWinkler,
+  },
+  {
+    id: 'jaccard_tokens',
+    label: 'Jaccard (tokens)',
+    family: 'Set-based',
+    tagline: 'Shared words over total unique words. Ignores word order.',
+    fn: jaccardTokens,
+  },
+  {
+    id: 'jaccard_ngrams',
+    label: 'Jaccard (n-grams)',
+    family: 'Set-based',
+    tagline: 'Shared character sequences. Catches partial word matches.',
+    fn: jaccardNgrams,
+  },
+];
+
+
+// ─── scenarios.js ───
+// Scenarios — the four real-world situations the tool walks through.
+//
+// Each scenario is just data: a title, a short story framing, a note about
+// where the reference list comes from in real life (so readers understand
+// the setup is realistic), a messy default input an analyst might type,
+// and the reference list of known-good values.
+//
+// Keeping this purely declarative means the rest of the app is generic —
+// adding a fifth scenario is just another entry here.
+const SCENARIOS = [
+  {
+    id: 'names',
+    title: 'Customer names',
+    story:
+      "An analyst has a customer name that looks off — a typo, a phonetic spelling, or a name with diacritics. Which real customer did they mean?",
+    source:
+      "In real life, the reference list comes from your CRM, customer master table, or patient registry — an authoritative list of known customers.",
+    noise: 'typos, diacritics, word order, missing letters',
+    defaultInput: 'Jhon Smith',
+    reference: [
+      'John Smith',
+      'Jon Smyth',
+      'Catherine Taylor',
+      'Katherine Taylor',
+      'Emily Wilson',
+      'Michael Johnson',
+      'Maria Rodriguez',
+      'Jose Hernandez',
+      'Carlos Martinez',
+      'Wei Chen',
+      'Hiroshi Tanaka',
+      'Min-jun Kim',
+      'Priya Patel',
+      'Rajesh Kumar',
+      'Ahmed Hassan',
+      'Fatima Al-Rashid',
+      'Chidi Okonkwo',
+      'Amara Diallo',
+      'Francois Dubois',
+      'Anna Kowalski',
+      'Mueller Schmidt',
+      'Siobhan O\u2019Connor',
+    ],
+  },
+  {
+    id: 'companies',
+    title: 'Company names',
+    story:
+      "An analyst has a company name with typos and missing legal suffixes. Which company in the corporate registry did they mean?",
+    source:
+      "In real life, the reference list comes from ASIC's company register, an ASX-listed company list, your vendor master, or a data provider like Dun & Bradstreet.",
+    noise: 'legal suffixes (Pty Ltd, Proprietary Limited), typos, abbreviations, missing words',
+    defaultInput: 'Commwealth Bank Aus',
+    reference: [
+      'BHP Group Limited',
+      'Commonwealth Bank of Australia',
+      'CSL Limited',
+      'Rio Tinto Limited',
+      'Wesfarmers Limited',
+      'Woolworths Group Limited',
+      'Telstra Group Limited',
+      'Macquarie Group Limited',
+      'ANZ Group Holdings Limited',
+      'National Australia Bank Limited',
+      'Westpac Banking Corporation',
+      'Qantas Airways Limited',
+      'Coles Group Limited',
+      'Fortescue Metals Group Limited',
+      'Origin Energy Limited',
+      'Atlassian Corporation Plc',
+    ],
+  },
+  {
+    id: 'addresses',
+    title: 'Addresses',
+    story:
+      "A messy Australian address — abbreviations, typos, missing commas — needs to be matched to a standardized address.",
+    source:
+      "In real life, the reference list comes from Australia Post's Postal Address File (PAF), a geocoding service like Google Places, or your organisation's cleansed address database.",
+    noise: 'abbreviations (St vs Street), typos in place names, format, missing postcodes',
+    defaultInput: '130 Swanson st melborne VIC',
+    reference: [
+      '130 Swanston Street, Melbourne VIC 3000',
+      'Parliament House, Canberra ACT 2600',
+      'Sydney Opera House, Bennelong Point, Sydney NSW 2000',
+      'Flinders Street Station, Melbourne VIC 3000',
+      '1 Martin Place, Sydney NSW 2000',
+      '101 Collins Street, Melbourne VIC 3000',
+      '200 George Street, Sydney NSW 2000',
+      'Adelaide Oval, War Memorial Drive, North Adelaide SA 5006',
+      'Kings Park, Fraser Avenue, Perth WA 6005',
+      'Brisbane City Hall, 64 Adelaide Street, Brisbane QLD 4000',
+      'Melbourne Cricket Ground, Brunton Avenue, Richmond VIC 3002',
+      'Old Parliament House, King George Terrace, Parkes ACT 2600',
+      'Southern Cross Station, 99 Spencer Street, Melbourne VIC 3008',
+      'Federation Square, Swanston Street, Melbourne VIC 3000',
+    ],
+  },
+  {
+    id: 'countries',
+    title: 'Country names',
+    story:
+      "A user typed a country name with a typo or abbreviation. Which country in the standard list did they mean?",
+    source:
+      "The reference list is ISO 3166 — the internationally maintained list of country names. Every system that stores countries should normalise against this.",
+    noise: 'typos, abbreviations, alternate spellings',
+    defaultInput: 'untied kingdum',
+    reference: [
+      'United States',
+      'United Kingdom',
+      'Germany',
+      'France',
+      'Spain',
+      'Italy',
+      'Japan',
+      'China',
+      'Brazil',
+      'Canada',
+      'Australia',
+      'Mexico',
+      'India',
+      'Russia',
+      'South Korea',
+      'Netherlands',
+      'Sweden',
+      'Norway',
+      'South Africa',
+      'Egypt',
+      'Argentina',
+      'New Zealand',
+      'Ireland',
+      'Portugal',
+    ],
+  },
+];
+function getScenario(id) {
+  return SCENARIOS.find((s) => s.id === id);
+}
+
+
+// ─── visualize.js ───
+// Visual explanations — the teaching layer.
+//
+// Each method has a renderer that turns its `details` object into HTML
+// that *shows the mechanism*. Scores alone don't teach; seeing which
+// characters aligned, which tokens overlapped, and which phonetic code
+// was produced — that's what makes the method click for a reader.
+
+// ─── Levenshtein: character alignment ────────────────────────────────────
+// Walks the edit script and renders two stacked rows, with each pair of
+// aligned characters in a column. Insertions/deletions get a "·" gap
+// marker. Substitutions and gaps are color-coded to draw the eye.
+function renderLevenshtein(details, { aLabel = 'Your entry', bLabel = 'Candidate' } = {}) {
+  const { ops, distance } = details;
+  const cells = ops
+    .map((op) => {
+      const cls = `lev-cell lev-${op.op}`;
+      const top = op.a == null ? '·' : escapeHtml(op.a);
+      const bot = op.b == null ? '·' : escapeHtml(op.b);
+      const topChar = `<span class="lev-char">${top}</span>`;
+      const botChar = `<span class="lev-char">${bot}</span>`;
+      return `<div class="${cls}"><div class="lev-top">${topChar}</div><div class="lev-bot">${botChar}</div></div>`;
+    })
+    .join('');
+  const summary = distance === 0
+    ? 'No edits needed — identical.'
+    : `${distance} edit${distance === 1 ? '' : 's'} to turn one into the other (substitutions in orange, insertions/deletions in blue).`;
+  return `
+    <div class="viz viz-lev">
+      <div class="viz-labels">
+        <span class="viz-label-top">${escapeHtml(aLabel)}</span>
+        <span class="viz-label-bot">${escapeHtml(bLabel)}</span>
+      </div>
+      <div class="lev-row">${cells}</div>
+      <p class="viz-summary">${summary}</p>
+    </div>
+  `;
+}
+
+// ─── Jaro-Winkler: matched characters + prefix highlight ─────────────────
+// Shows each character of both strings, shading matched characters green.
+// Prefix characters (shared at the start) get an extra underline to show
+// the Winkler boost coming from them.
+function renderJaroWinkler(a, b, details, { aLabel = 'Your entry', bLabel = 'Candidate' } = {}) {
+  const { aMatches, bMatches, prefix, matches, transpositions } = details;
+  const renderString = (str, mask) =>
+    [...str]
+      .map((ch, i) => {
+        const matched = mask[i];
+        const isPrefix = i < prefix;
+        const classes = ['jw-ch'];
+        if (matched) classes.push('jw-matched');
+        if (isPrefix) classes.push('jw-prefix');
+        return `<span class="${classes.join(' ')}">${escapeHtml(ch)}</span>`;
+      })
+      .join('');
+
+  const aHtml = renderString(a, aMatches || []);
+  const bHtml = renderString(b, bMatches || []);
+  const prefixSummary =
+    prefix > 0
+      ? `Shared prefix of ${prefix} character${prefix === 1 ? '' : 's'} (underlined) — Winkler bonus.`
+      : 'No shared prefix — no Winkler bonus.';
+  const transSummary =
+    transpositions > 0
+      ? ` ${transpositions} pair${transpositions === 1 ? '' : 's'} out of order.`
+      : '';
+
+  return `
+    <div class="viz viz-jw">
+      <div class="jw-row"><span class="viz-side-label">${escapeHtml(aLabel)}</span><span class="jw-string">${aHtml}</span></div>
+      <div class="jw-row"><span class="viz-side-label">${escapeHtml(bLabel)}</span><span class="jw-string">${bHtml}</span></div>
+      <p class="viz-summary">${matches || 0} character${matches === 1 ? '' : 's'} matched within the window (green). ${prefixSummary}${transSummary}</p>
+    </div>
+  `;
+}
+
+// ─── Jaccard tokens: pills ───────────────────────────────────────────────
+// Renders three groups of pills: shared, unique to A, unique to B.
+// A glance tells the reader how much overlap there is.
+function renderJaccardTokens(details) {
+  const { shared, uniqueA, uniqueB } = details;
+  const pill = (text, cls) => `<span class="pill ${cls}">${escapeHtml(text)}</span>`;
+  const group = (label, items, cls) => {
+    if (items.length === 0) {
+      return `<div class="pill-group"><span class="pill-group-label">${label}:</span><span class="pill-none">none</span></div>`;
+    }
+    return `<div class="pill-group"><span class="pill-group-label">${label}:</span>${items.map((t) => pill(t, cls)).join('')}</div>`;
+  };
+  return `
+    <div class="viz viz-tokens">
+      ${group('Shared tokens', shared, 'pill-shared')}
+      ${group('Only in your entry', uniqueA, 'pill-unique-a')}
+      ${group('Only in candidate', uniqueB, 'pill-unique-b')}
+    </div>
+  `;
+}
+
+// ─── Jaccard n-grams: compact tile summary ───────────────────────────────
+// Full n-gram lists get long. Show a count + the first ~10 shared tiles
+// so the reader sees the idea without a wall of two-letter squares.
+function renderJaccardNgrams(details) {
+  const { shared, uniqueA, uniqueB, n } = details;
+  const sample = shared.slice(0, 12);
+  const tiles = sample
+    .map((g) => `<span class="ngram-tile">${escapeHtml(g)}</span>`)
+    .join('');
+  const extra = shared.length > sample.length ? ` (+${shared.length - sample.length} more)` : '';
+  return `
+    <div class="viz viz-ngrams">
+      <div class="ngram-summary">
+        ${shared.length} shared ${n}-gram${shared.length === 1 ? '' : 's'},
+        ${uniqueA.length} only in your entry,
+        ${uniqueB.length} only in the candidate.
+      </div>
+      <div class="ngram-row">
+        <span class="viz-side-label">Shared:</span>
+        ${tiles || '<span class="pill-none">none</span>'}
+        <span class="ngram-extra">${extra}</span>
+      </div>
+    </div>
+  `;
+}
+
+// ─── Dispatch by method id ───────────────────────────────────────────────
+// Called from the main render loop. Each method is rendered from its
+// normalized inputs + the details object the method itself returned.
+function renderVisualization(methodId, a, b, result, labels) {
+  const details = result.details || {};
+  switch (methodId) {
+    case 'levenshtein':
+      return renderLevenshtein(details, labels);
+    case 'jaro_winkler':
+      return renderJaroWinkler(a, b, details, labels);
+    case 'jaccard_tokens':
+      return renderJaccardTokens(details);
+    case 'jaccard_ngrams':
+      return renderJaccardNgrams(details);
+    default:
+      return '';
+  }
+}
+
+
+// ─── calculations.js ───
+// Score-derivation rendering shared between the algorithms page (where
+// each method card shows the math for its fixed example) and the Try-it
+// page (where it's an opt-in toggle on the top candidate). Each builder
+// returns { where?, blocks } — `blocks` is the substitution derivation,
+// `where` is an optional definitions list for any named quantities the
+// formula references.
+
+const fmtScore = (n) => n.toFixed(3);
+
+const CALCULATIONS = {
+  levenshtein: (a, b, r) => {
+    const d = r.details.distance;
+    const maxLen = Math.max(a.length, b.length);
+    return {
+      blocks: [[
+        'Score = 1 − distance ÷ max(len A, len B)',
+        `      = 1 − ${d} ÷ max(${a.length}, ${b.length})`,
+        `      = 1 − ${d} ÷ ${maxLen} = ${fmtScore(r.score)}`,
+      ]],
+    };
+  },
+  jaro_winkler: (a, b, r) => {
+    const { jaro, prefix, matches, transpositions } = r.details;
+    return {
+      where: [
+        ['matches', 'characters that appear in both strings, found close to the same position (within a small sliding window).'],
+        ['transpositions', 'matched characters that appear in a different order between the two strings (counted as out-of-order pairs ÷ 2).'],
+        ['prefix', 'how many characters at the start of A and B are identical (capped at 4) — drives the Winkler bonus.'],
+      ],
+      blocks: [
+        [
+          'Jaro = (matches÷|A| + matches÷|B| + (matches − transpositions)÷matches) ÷ 3',
+          `     = (${matches}÷${a.length} + ${matches}÷${b.length} + (${matches} − ${transpositions})÷${matches}) ÷ 3`,
+          `     = ${fmtScore(jaro)}`,
+        ],
+        [
+          'Score = Jaro + prefix × 0.1 × (1 − Jaro)',
+          `      = ${fmtScore(jaro)} + ${prefix} × 0.1 × (1 − ${fmtScore(jaro)})`,
+          `      = ${fmtScore(r.score)}`,
+        ],
+      ],
+    };
+  },
+  jaccard_tokens: (a, b, r) => {
+    const sharedN = r.details.shared.length;
+    const unionN = sharedN + r.details.uniqueA.length + r.details.uniqueB.length;
+    return {
+      blocks: [[
+        'Score = shared tokens ÷ total unique tokens',
+        `      = ${sharedN} ÷ ${unionN}`,
+        `      = ${fmtScore(r.score)}`,
+      ]],
+    };
+  },
+  jaccard_ngrams: (a, b, r) => {
+    const sharedN = r.details.shared.length;
+    const unionN = sharedN + r.details.uniqueA.length + r.details.uniqueB.length;
+    return {
+      blocks: [[
+        `Score = shared ${r.details.n}-grams ÷ total unique ${r.details.n}-grams`,
+        `      = ${sharedN} ÷ ${unionN}`,
+        `      = ${fmtScore(r.score)}`,
+      ]],
+    };
+  },
+};
+function renderCalculation(methodId, a, b, result) {
+  const builder = CALCULATIONS[methodId];
+  if (!builder) return '';
+  const out = builder(a, b, result);
+  const where = (out.where || [])
+    .map(([term, def]) => `<dt>${escapeHtml(term)}</dt><dd>${escapeHtml(def)}</dd>`)
+    .join('');
+  const whereHtml = where ? `<dl class="method-calc-where">${where}</dl>` : '';
+  const blocks = out.blocks
+    .map((rows) => `<pre class="method-calc-block">${rows.join('\n')}</pre>`)
+    .join('');
+  return `
+    <div class="method-calc">
+      <div class="method-calc-label">How the score is calculated</div>
+      ${whereHtml}
+      ${blocks}
+    </div>
+  `;
+}
+
+
+// ─── app.js ───
+// App entry point — scenario-driven walkthrough.
+//
+// Page reads top to bottom as a story:
+//   0. Scenario tabs + story + messy input + reference list
+//   1. THE ANSWER — the verdict first, because that's what the reader
+//      wants to know
+//   2. Working — normalisation trail, candidate breakdowns, the rest
+//
+// Each candidate card leads with a compact score summary across all
+// methods, so the reader can compare at a glance before diving into
+// the per-method visual detail.
+
+
+
+
+
+
+const state = {
+  scenarioId: SCENARIOS[0].id,
+  input: SCENARIOS[0].defaultInput,
+};
+
+// ─── Element lookups ─────────────────────────────────────────────────────
+const $ = (id) => document.getElementById(id);
+const tabsEl = $('scenarioTabs');
+const storyEl = $('scenarioStory');
+const sourceEl = $('scenarioSource');
+const noiseEl = $('scenarioNoise');
+const inputEl = $('mainInput');
+const refSummaryEl = $('referenceSummary');
+const refListEl = $('referenceList');
+const normTrailEl = $('normTrail');
+const topEl = $('topCandidates');
+const restEl = $('restCandidates');
+const verdictEl = $('verdict');
+
+// ─── Helpers ─────────────────────────────────────────────────────────────
+const fmt = (n) => n.toFixed(3);
+const scoreClass = (s) => (s >= 0.85 ? 'score-high' : s < 0.5 ? 'score-low' : '');
+const ordinal = (n) => {
+  const tens = n % 100;
+  if (tens >= 11 && tens <= 13) return `${n}th`;
+  const suffix = { 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th';
+  return `${n}${suffix}`;
+};
+
+// ─── Scenario tabs ───────────────────────────────────────────────────────
+function renderTabs() {
+  tabsEl.innerHTML = '';
+  for (const s of SCENARIOS) {
+    const btn = document.createElement('button');
+    btn.className = 'scenario-tab' + (s.id === state.scenarioId ? ' active' : '');
+    btn.textContent = s.title;
+    btn.addEventListener('click', () => {
+      state.scenarioId = s.id;
+      state.input = s.defaultInput;
+      inputEl.value = s.defaultInput;
+      renderAll();
+    });
+    tabsEl.appendChild(btn);
+  }
+}
+
+// ─── Scenario story + reference list ─────────────────────────────────────
+function renderScenarioHeader() {
+  const sc = getScenario(state.scenarioId);
+  storyEl.textContent = sc.story;
+  sourceEl.innerHTML = `<strong>Where the reference list comes from:</strong> ${escapeHtml(sc.source)}`;
+  noiseEl.innerHTML = `<strong>Typical noise:</strong> ${escapeHtml(sc.noise)}.`;
+  refSummaryEl.textContent = `Reference list — ${sc.reference.length} entries`;
+  refListEl.innerHTML = sc.reference
+    .map((entry) => `<li>${escapeHtml(entry)}</li>`)
+    .join('');
+}
+
+// ─── Normalization trail for the user's input ────────────────────────────
+function renderNormTrail() {
+  const stages = runPipeline(state.input);
+  const rows = stages
+    .map((stage, i) => {
+      const explain =
+        i === 0
+          ? 'Raw input.'
+          : (steps.find((s) => s.id === stage.id)?.explain || '');
+      return `
+        <div class="trail-row ${i === 0 ? 'is-raw' : ''}">
+          <span class="trail-stage">${escapeHtml(stage.label)}</span>
+          <span class="trail-string">${escapeHtml(stage.output) || '<em class="trail-empty">(empty)</em>'}</span>
+          <span class="trail-explain">${escapeHtml(explain)}</span>
+        </div>
+      `;
+    })
+    .join('');
+  normTrailEl.innerHTML = `
+    <div class="trail-head">
+      <span>Stage</span>
+      <span>Your entry after this step</span>
+      <span>Why this step matters</span>
+    </div>
+    ${rows}
+  `;
+}
+
+// ─── Score every candidate ───────────────────────────────────────────────
+// For each candidate, run every method and pick the best score + method.
+// Rank candidates by their best score across all methods.
+
+function scoreCandidates() {
+  const sc = getScenario(state.scenarioId);
+  const normA = normalize(state.input);
+  return sc.reference
+    .map((entry) => {
+      const normB = normalize(entry);
+      const perMethod = METHODS.map((m) => ({
+        methodId: m.id,
+        methodLabel: m.label,
+        methodFamily: m.family,
+        result: m.fn(normA, normB),
+      }));
+      const best = perMethod.reduce(
+        (acc, cur) => (cur.result.score > acc.result.score ? cur : acc),
+        perMethod[0],
+      );
+      return { raw: entry, normA, normB, perMethod, best };
+    })
+    .sort((a, b) => b.best.result.score - a.best.result.score);
+}
+
+// ─── Score summary row (shown at top of each candidate card) ─────────────
+function renderScoreSummary(perMethod, bestId) {
+  const cells = perMethod
+    .map((pm) => {
+      const isBest = pm.methodId === bestId;
+      return `
+        <div class="score-summary-cell ${isBest ? 'is-best' : ''} ${scoreClass(pm.result.score)}">
+          <span class="score-summary-method">${escapeHtml(pm.methodLabel)}</span>
+          <span class="score-summary-score">${fmt(pm.result.score)}</span>
+        </div>
+      `;
+    })
+    .join('');
+  return `<div class="score-summary">${cells}</div>`;
+}
+
+// ─── Top candidate — full breakdown, always expanded ─────────────────────
+function renderTopCandidates(candidates) {
+  topEl.innerHTML = candidates.length
+    ? renderCandidateCard(candidates[0], { showCalc: true })
+    : '<p class="empty-note">No candidates to compare.</p>';
+}
+
+function renderMethodSections(perMethod, normA, normB, bestId, { showCalc = false } = {}) {
+  return perMethod
+    .map((pm) => {
+      const viz = renderVisualization(pm.methodId, normA, normB, pm.result, {
+        aLabel: 'Your entry',
+        bLabel: 'Candidate',
+      });
+      const scoreCls = scoreClass(pm.result.score);
+      const isBest = pm.methodId === bestId;
+      const calc = showCalc
+        ? `<details class="method-calc-toggle"><summary>Show calculation</summary>${renderCalculation(pm.methodId, normA, normB, pm.result)}</details>`
+        : '';
+      return `
+        <div class="method-section ${isBest ? 'method-section-best' : ''}">
+          <div class="method-section-head">
+            <span class="method-section-name">${escapeHtml(pm.methodLabel)}</span>
+            <span class="method-section-family">${escapeHtml(pm.methodFamily)}</span>
+            <span class="method-section-score ${scoreCls}">${fmt(pm.result.score)}</span>
+          </div>
+          <p class="method-section-expl">${escapeHtml(pm.result.explanation)}</p>
+          ${viz}
+          ${calc}
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function renderCandidateCard(cand, { showCalc = false } = {}) {
+  const { raw, normA, normB, perMethod, best } = cand;
+  return `
+    <article class="candidate-card candidate-card-top">
+      <header class="candidate-head">
+        <div class="eyebrow-row"><span class="eyebrow">Best match</span></div>
+        <div class="candidate-names">
+          <span class="candidate-name">${escapeHtml(raw)}</span>
+          <span class="candidate-norm">normalised: <code>${escapeHtml(normB)}</code></span>
+        </div>
+      </header>
+      ${renderScoreSummary(perMethod, best.methodId)}
+      <div class="candidate-methods">${renderMethodSections(perMethod, normA, normB, best.methodId, { showCalc })}</div>
+    </article>
+  `;
+}
+
+// ─── Rest — accordion rows, click to reveal full working ─────────────────
+function renderRestCandidates(candidates) {
+  const rest = candidates.slice(1);
+  if (rest.length === 0) {
+    restEl.innerHTML = '<p class="empty-note">Only one candidate in the reference list.</p>';
+    return;
+  }
+  restEl.innerHTML = rest
+    .map((cand, i) => renderAccordionRow(cand, i + 2))
+    .join('');
+}
+
+function renderAccordionRow(cand, rank) {
+  const { raw, normA, normB, perMethod, best } = cand;
+  return `
+    <details class="candidate-row">
+      <summary class="candidate-row-summary">
+        <span class="candidate-row-rank">${ordinal(rank)}</span>
+        <span class="candidate-row-name">${escapeHtml(raw)}</span>
+        <span class="candidate-row-method">${escapeHtml(best.methodLabel)}</span>
+        <span class="candidate-row-score ${scoreClass(best.result.score)}">${fmt(best.result.score)}</span>
+        <span class="candidate-row-chevron" aria-hidden="true">›</span>
+      </summary>
+      <div class="candidate-row-body">
+        <div class="candidate-row-norm">normalised: <code>${escapeHtml(normB)}</code></div>
+        ${renderScoreSummary(perMethod, best.methodId)}
+        <div class="candidate-methods">${renderMethodSections(perMethod, normA, normB, best.methodId, { showCalc: true })}</div>
+      </div>
+    </details>
+  `;
+}
+
+// ─── Verdict (now at the top) ────────────────────────────────────────────
+function renderVerdict(candidates) {
+  if (candidates.length === 0) {
+    verdictEl.innerHTML = '<p>No candidates to match against.</p>';
+    return;
+  }
+  const winner = candidates[0];
+  const { raw, best } = winner;
+  const confidence =
+    best.result.score >= 0.85 ? 'high' : best.result.score >= 0.65 ? 'medium' : 'low';
+  const confidenceCopy = {
+    high: 'Strong evidence — the best-scoring method is well above chance.',
+    medium: 'Reasonable match, but worth a human look.',
+    low: 'Weak match — treat with caution. The analyst may have typed something very different from anything in the reference list.',
+  }[confidence];
+  verdictEl.innerHTML = `
+    <div class="verdict-box verdict-${confidence}">
+      <div class="verdict-row">
+        <span class="eyebrow">Your entry</span>
+        <code>${escapeHtml(state.input)}</code>
+      </div>
+      <div class="verdict-row">
+        <span class="eyebrow">Likely match</span>
+        <span class="verdict-match">${escapeHtml(raw)}</span>
+      </div>
+      <div class="verdict-row">
+        <span class="eyebrow">Winning method</span>
+        <span>${escapeHtml(best.methodLabel)} — score ${fmt(best.result.score)}</span>
+      </div>
+      <p class="verdict-why">${confidenceCopy}</p>
+    </div>
+  `;
+}
+
+// ─── Main render loop ────────────────────────────────────────────────────
+function renderAll() {
+  renderScenarioHeader();
+  const candidates = scoreCandidates();
+  renderVerdict(candidates);
+  renderNormTrail();
+  renderTopCandidates(candidates);
+  renderRestCandidates(candidates);
+  [...tabsEl.children].forEach((btn, i) => {
+    btn.classList.toggle('active', SCENARIOS[i].id === state.scenarioId);
+  });
+}
+
+// ─── Bootstrap ───────────────────────────────────────────────────────────
+function init() {
+  inputEl.value = state.input;
+  inputEl.addEventListener('input', (e) => {
+    state.input = e.target.value;
+    renderAll();
+  });
+  renderTabs();
+  renderAll();
+}
+
+init();
+
+
+// ─── methods-page.js ───
+// Renders live visualizations into each method card's "Worked example"
+// block. Each target div carries data-method/data-a/data-b; we run the
+// pair through the same normalize → method → renderVisualization chain
+// the Try-it page uses, so the example breakdown matches what the reader
+// will see when they play with the tool. The score derivation is
+// rendered from the shared calculations module.
+
+
+
+
+function renderMethodCards() {
+  const byId = Object.fromEntries(METHODS.map((m) => [m.id, m]));
+  for (const el of document.querySelectorAll('.method-viz')) {
+    const method = byId[el.dataset.method];
+    if (!method) continue;
+    const a = el.dataset.a ?? '';
+    const b = el.dataset.b ?? '';
+    const normA = normalize(a);
+    const normB = normalize(b);
+    const result = method.fn(normA, normB);
+    const viz = renderVisualization(el.dataset.method, normA, normB, result, {
+      aLabel: 'A',
+      bLabel: 'B',
+    });
+    el.innerHTML = `
+      ${viz}
+      ${renderCalculation(el.dataset.method, normA, normB, result)}
+    `;
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderMethodCards);
+} else {
+  renderMethodCards();
+}
+
+    </script>
+    <script>
+
+// ─── Bundle nav toggle (single-file deliverable) ───
+(function () {
+  const links = document.querySelectorAll('.bundle-nav-link');
+  const pages = document.querySelectorAll('.page');
+  const PAGE_MAP = {
+    'index.html': 'page-try',
+    'concepts.html': 'page-concepts',
+    'methods.html': 'page-methods',
+  };
+  function show(id) {
+    pages.forEach((p) => p.classList.toggle('active', p.id === id));
+    links.forEach((l) => l.classList.toggle('active', 'page-' + l.dataset.page === id));
+    window.scrollTo(0, 0);
+  }
+  links.forEach((l) => {
+    l.addEventListener('click', () => show('page-' + l.dataset.page));
+  });
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a');
+    if (!a) return;
+    const href = a.getAttribute('href') || '';
+    if (PAGE_MAP[href]) {
+      e.preventDefault();
+      show(PAGE_MAP[href]);
+    }
+  });
+  show('page-try');
+})();
+
+    </script>
+  </body>
+</html>
