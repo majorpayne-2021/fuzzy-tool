@@ -16,6 +16,8 @@ Two halves:
 — **Jennifer Payne** · Data scientist · [GitHub](https://github.com/majorpayne-2021) · [LinkedIn](https://www.linkedin.com/in/jenniferapayne25/)
 *Making the complex simple, one tech project at a time.*
 
+![The Try it page — pick a scenario (customer names, companies, addresses, countries), type a messy input, and watch the four scoring algorithms reason about it](screenshots/fuzzy-tool-tryit.png)
+
 ---
 
 ## Quickstart
@@ -49,6 +51,8 @@ canonical data-cleansing workflow:
 The Python and SQL files mirror this structure section-for-section so the
 parallel between languages is immediate.
 
+![The five-step data cleansing workflow — Validate, Standardise, Exact match, Fuzzy match, Apply threshold — with the fuzzy-match step highlighted as the focus of this tool](screenshots/fuzzy-match-workflow.png)
+
 ## The four scorers
 
 Picked because each one teaches a different idea about similarity:
@@ -62,6 +66,14 @@ Picked because each one teaches a different idea about similarity:
 
 Phonetic methods (Soundex, Metaphone) and semantic embeddings exist but
 aren't covered here — they're a different teaching arc.
+
+![The best-match card on the Try it page — 'Jhon Smith' scored against 'John Smith' by all four methods at once. Jaro-Winkler wins at 0.970; Jaccard tokens, designed for word-reorder noise rather than typos, scores 0.333 on the same pair](screenshots/fuzzy-tool-bestmatch.png)
+
+*All four scorers run on every candidate. Seeing them disagree on the same input is the fastest way to build intuition for which one fits which kind of noise.*
+
+![The Levenshtein method card on the Algorithms page, showing the 'kitten vs sitting' worked example with character alignment, edit operations colour-coded, and the score derivation 1 − 3 ÷ 7 = 0.571 spelled out underneath](screenshots/fuzzy-tool-algorithm.png)
+
+*Each algorithm gets a dedicated card with its own visualisation and the score derivation written out — no black-box numbers.*
 
 ## Two lessons most tutorials skip
 
