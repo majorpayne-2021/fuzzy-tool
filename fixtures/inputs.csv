@@ -1,0 +1,30 @@
+scenario,value,expected_match
+customer_names,Jhon Smith,John Smith
+customer_names,Katherine taylor,Katherine Taylor
+customer_names,jose hernandes,Jose Hernandez
+customer_names,Mueller Schmit,Mueller Schmidt
+customer_names,Siobhan OConnor,Siobhan O’Connor
+customer_names,francois Dubois,Francois Dubois
+customer_names,Pryia Patel,Priya Patel
+customer_names,wei chen,Wei Chen
+company_names,Commwealth Bank Aus,Commonwealth Bank of Australia
+company_names,BHP,BHP Group Limited
+company_names,Telstra,Telstra Group Limited
+company_names,Qantas Pty Ltd,Qantas Airways Limited
+company_names,Macquarie group,Macquarie Group Limited
+company_names,Wollworths Group,Woolworths Group Limited
+company_names,atlassian corp,Atlassian Corporation Plc
+addresses,130 Swanson st melborne VIC,"130 Swanston Street, Melbourne VIC 3000"
+addresses,Parliament Hse Canberra,"Parliament House, Canberra ACT 2600"
+addresses,sydney opera house,"Sydney Opera House, Bennelong Point, Sydney NSW 2000"
+addresses,101 collins st melbourne,"101 Collins Street, Melbourne VIC 3000"
+addresses,Flinders st station melbourne,"Flinders Street Station, Melbourne VIC 3000"
+addresses,Federation sqr swanston street,"Federation Square, Swanston Street, Melbourne VIC 3000"
+country_names,untied kingdum,United Kingdom
+country_names,USA,United States
+country_names,south afrika,South Africa
+country_names,New Zeland,New Zealand
+country_names,Italya,Italy
+country_names,Argintina,Argentina
+country_names,Netherlnds,Netherlands
+country_names,sth korea,South Korea

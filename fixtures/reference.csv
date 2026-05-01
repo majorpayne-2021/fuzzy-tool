@@ -1,0 +1,77 @@
+scenario,value
+customer_names,John Smith
+customer_names,Jon Smyth
+customer_names,Catherine Taylor
+customer_names,Katherine Taylor
+customer_names,Emily Wilson
+customer_names,Michael Johnson
+customer_names,Maria Rodriguez
+customer_names,Jose Hernandez
+customer_names,Carlos Martinez
+customer_names,Wei Chen
+customer_names,Hiroshi Tanaka
+customer_names,Min-jun Kim
+customer_names,Priya Patel
+customer_names,Rajesh Kumar
+customer_names,Ahmed Hassan
+customer_names,Fatima Al-Rashid
+customer_names,Chidi Okonkwo
+customer_names,Amara Diallo
+customer_names,Francois Dubois
+customer_names,Anna Kowalski
+customer_names,Mueller Schmidt
+customer_names,Siobhan O’Connor
+company_names,BHP Group Limited
+company_names,Commonwealth Bank of Australia
+company_names,CSL Limited
+company_names,Rio Tinto Limited
+company_names,Wesfarmers Limited
+company_names,Woolworths Group Limited
+company_names,Telstra Group Limited
+company_names,Macquarie Group Limited
+company_names,ANZ Group Holdings Limited
+company_names,National Australia Bank Limited
+company_names,Westpac Banking Corporation
+company_names,Qantas Airways Limited
+company_names,Coles Group Limited
+company_names,Fortescue Metals Group Limited
+company_names,Origin Energy Limited
+company_names,Atlassian Corporation Plc
+addresses,"130 Swanston Street, Melbourne VIC 3000"
+addresses,"Parliament House, Canberra ACT 2600"
+addresses,"Sydney Opera House, Bennelong Point, Sydney NSW 2000"
+addresses,"Flinders Street Station, Melbourne VIC 3000"
+addresses,"1 Martin Place, Sydney NSW 2000"
+addresses,"101 Collins Street, Melbourne VIC 3000"
+addresses,"200 George Street, Sydney NSW 2000"
+addresses,"Adelaide Oval, War Memorial Drive, North Adelaide SA 5006"
+addresses,"Kings Park, Fraser Avenue, Perth WA 6005"
+addresses,"Brisbane City Hall, 64 Adelaide Street, Brisbane QLD 4000"
+addresses,"Melbourne Cricket Ground, Brunton Avenue, Richmond VIC 3002"
+addresses,"Old Parliament House, King George Terrace, Parkes ACT 2600"
+addresses,"Southern Cross Station, 99 Spencer Street, Melbourne VIC 3008"
+addresses,"Federation Square, Swanston Street, Melbourne VIC 3000"
+country_names,United States
+country_names,United Kingdom
+country_names,Germany
+country_names,France
+country_names,Spain
+country_names,Italy
+country_names,Japan
+country_names,China
+country_names,Brazil
+country_names,Canada
+country_names,Australia
+country_names,Mexico
+country_names,India
+country_names,Russia
+country_names,South Korea
+country_names,Netherlands
+country_names,Sweden
+country_names,Norway
+country_names,South Africa
+country_names,Egypt
+country_names,Argentina
+country_names,New Zealand
+country_names,Ireland
+country_names,Portugal
