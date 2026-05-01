@@ -25,6 +25,7 @@ Two halves:
 | Read the source of the tool | [`web/`](web/) — three HTML pages + plain ES-module JS |
 | Drop the pipeline into Python | [`examples/fuzzy_matching.py`](examples/fuzzy_matching.py) |
 | Drop the pipeline into PostgreSQL | [`examples/fuzzy_matching.sql`](examples/fuzzy_matching.sql) |
+| …on a server where you can't `CREATE EXTENSION` | [`examples/fuzzy_matching_no_extensions.sql`](examples/fuzzy_matching_no_extensions.sql) |
 | See it run on CRM-style CSVs | [`examples/fuzzy_matching_demo.ipynb`](examples/fuzzy_matching_demo.ipynb) |
 
 The bundled HTML file is fully self-contained — all CSS and JavaScript inlined,
@@ -96,6 +97,7 @@ fuzzy-tool/
 ├── examples/
 │   ├── fuzzy_matching.py        Python recipes — single-purpose functions per stage
 │   ├── fuzzy_matching.sql       PostgreSQL recipes — same shape, paste-and-run
+│   ├── fuzzy_matching_no_extensions.sql  PL/pgSQL fallback for locked-down servers
 │   └── fuzzy_matching_demo.ipynb  Notebook walkthrough on CSV inputs
 ├── fixtures/
 │   ├── inputs.csv          Messy inputs across 4 scenarios + expected_match column
