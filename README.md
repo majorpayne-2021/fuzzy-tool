@@ -13,9 +13,6 @@ Two halves:
   written as single-purpose functions in **Python** and **PostgreSQL** —
   so you can lift the bit you need into your own project.
 
-— **Jennifer Payne** · Data scientist · [GitHub](https://github.com/majorpayne-2021) · [LinkedIn](https://www.linkedin.com/in/jenniferapayne25/)
-*Making the complex simple, one tech project at a time.*
-
 ![The Try it page — pick a scenario (customer names, companies, addresses, countries), type a messy input, and watch the four scoring algorithms reason about it](screenshots/fuzzy-tool-tryit.png)
 
 ---
