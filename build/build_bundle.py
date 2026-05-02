@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Bundle the three-page web/ source into a single self-contained
-dist/fuzzy-tool.html that can be emailed around or downloaded.
+download-tool/fuzzy-tool.html that can be emailed around or downloaded.
 
 CSS is inlined; ES modules are concatenated and stripped of import/export
 keywords; cross-page links are intercepted by a small SPA-style nav.
@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 WEB = ROOT / "web"
-OUT = ROOT / "dist" / "fuzzy-tool.html"
+OUT = ROOT / "download-tool" / "fuzzy-tool.html"
 
 
 def extract_body_section(html: str) -> str:

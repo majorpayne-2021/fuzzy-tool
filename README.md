@@ -21,12 +21,12 @@ Two halves:
 
 | If you want to… | Go here |
 |---|---|
-| Just play with the tool, no install | Download [`dist/fuzzy-tool.html`](dist/fuzzy-tool.html) and double-click it |
+| Just play with the tool, no install | Download [`download-tool/fuzzy-tool.html`](download-tool/fuzzy-tool.html) and double-click it |
 | Read the source of the tool | [`web/`](web/) — three HTML pages + plain ES-module JS |
-| Drop the pipeline into Python | [`examples/fuzzy_matching.py`](examples/fuzzy_matching.py) |
-| Drop the pipeline into PostgreSQL | [`examples/fuzzy_matching.sql`](examples/fuzzy_matching.sql) |
-| …on a server where you can't `CREATE EXTENSION` | [`examples/fuzzy_matching_no_extensions.sql`](examples/fuzzy_matching_no_extensions.sql) |
-| See it run on CRM-style CSVs | [`examples/fuzzy_matching_demo.ipynb`](examples/fuzzy_matching_demo.ipynb) |
+| Drop the pipeline into Python | [`demo-files/fuzzy_matching.py`](demo-files/fuzzy_matching.py) |
+| Drop the pipeline into PostgreSQL | [`demo-files/fuzzy_matching.sql`](demo-files/fuzzy_matching.sql) |
+| …on a server where you can't `CREATE EXTENSION` | [`demo-files/fuzzy_matching_no_extensions.sql`](demo-files/fuzzy_matching_no_extensions.sql) |
+| See it run on CRM-style CSVs | [`demo-files/fuzzy_matching_demo.ipynb`](demo-files/fuzzy_matching_demo.ipynb) |
 
 The bundled HTML file is fully self-contained — all CSS and JavaScript inlined,
 no companion files. It works offline; only the custom fonts (Fraunces + Inter)
@@ -89,20 +89,22 @@ aren't covered here — they're a different teaching arc.
 
 ```
 fuzzy-tool/
-├── web/                    Source for the interactive tool (HTML + ES-module JS)
-│   ├── index.html          "Try it" — pick a scenario, type messy input, see scores
-│   ├── concepts.html       "What is fuzzy matching?" — pipeline + checklist
-│   └── methods.html        "The algorithms" — per-method explanations + math
-├── dist/fuzzy-tool.html    Bundled single-file version of the tool (download-and-go)
-├── examples/
-│   ├── fuzzy_matching.py        Python recipes — single-purpose functions per stage
-│   ├── fuzzy_matching.sql       PostgreSQL recipes — same shape, paste-and-run
-│   ├── fuzzy_matching_no_extensions.sql  PL/pgSQL fallback for locked-down servers
-│   └── fuzzy_matching_demo.ipynb  Notebook walkthrough on CSV inputs
-├── fixtures/
-│   ├── inputs.csv          Messy inputs across 4 scenarios + expected_match column
-│   └── reference.csv       Authoritative reference lists (same as the web tool)
-└── tools/build_bundle.py   Builds dist/fuzzy-tool.html from web/
+├── web/                       Source for the interactive tool (HTML + ES-module JS)
+│   ├── index.html             "Try it" — pick a scenario, type messy input, see scores
+│   ├── concepts.html          "What is fuzzy matching?" — pipeline + checklist
+│   └── methods.html           "The algorithms" — per-method explanations + math
+├── download-tool/             Bundled single-file tool — get the standalone here
+│   └── fuzzy-tool.html        Self-contained HTML, opens with a double-click
+├── demo-files/
+│   ├── fuzzy_matching.py                  Python — single-purpose functions per stage
+│   ├── fuzzy_matching.sql                 PostgreSQL — same shape, paste-and-run
+│   ├── fuzzy_matching_no_extensions.sql   PL/pgSQL fallback for locked-down servers
+│   ├── fuzzy_matching_demo.ipynb          Notebook walkthrough on CSV inputs
+│   └── sample-data/
+│       ├── inputs.csv          Messy inputs across 4 scenarios + expected_match column
+│       └── reference.csv       Authoritative reference lists (same as the web tool)
+├── screenshots/                Images embedded in this README
+└── build/build_bundle.py       Builds download-tool/fuzzy-tool.html from web/
 ```
 
 ## Running locally
@@ -118,14 +120,14 @@ python3 -m http.server 8000 --directory web
 Rebuild the bundled file after editing source:
 
 ```bash
-python3 tools/build_bundle.py
+python3 build/build_bundle.py
 ```
 
 The Python file works as-is:
 
 ```bash
 pip install rapidfuzz
-python3 examples/fuzzy_matching.py
+python3 demo-files/fuzzy_matching.py
 ```
 
 The SQL file targets PostgreSQL 13+ and needs three `CREATE EXTENSION`

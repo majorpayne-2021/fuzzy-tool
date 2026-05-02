@@ -12,7 +12,7 @@ venv/
 
 node_modules/
 
-# Build artifacts in dist/ are ignored by default — except the bundled
-# single-file tool, which is the public deliverable people download.
-dist/*
-!dist/fuzzy-tool.html
+# Build artifacts in download-tool/ are ignored by default — except the
+# bundled single-file tool, which is the public deliverable.
+download-tool/*
+!download-tool/fuzzy-tool.html
